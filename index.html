@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuels Secondes</title>
-
+    
     <!-- Importation de Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
 
@@ -133,8 +133,8 @@
         <div id="agenda-container">
             <h2>Mon Agenda</h2>
             <textarea id="agenda-text" placeholder="Écris tes devoirs ici..."></textarea>
-            <button onclick="saveAgenda()">Sauvegarder</button>
-            <button onclick="loadAgenda()">Charger</button>
+            <button onclick="saveAgenda(auth.currentUser.uid, document.getElementById('agenda-text').value)">Sauvegarder</button>
+            <button onclick="loadAgenda(auth.currentUser.uid)">Charger</button>
             <button onclick="signOutUser()">Se Déconnecter</button>
         </div>
     </div>
@@ -145,81 +145,65 @@
     </div>
 
     <!-- Importer les scripts Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
 
-    <!-- Importer le script de configuration Firebase -->
+    <!-- Importer ton fichier de configuration Firebase -->
+    <script type="module" src="./firebase-config.js"></script>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
-        import { firebaseConfig } from "./firebase-config.js"; // Assure-toi que le chemin est correct
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { firebaseConfig } from "./firebase-config.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Fonction pour sauvegarder l'agenda
-        function saveAgenda() {
-            const user = auth.currentUser;
-            if (user) {
-                const agendaText = document.getElementById('agenda-text').value;
-                set(ref(database, 'users/' + user.uid + '/agenda'), {
-                    text: agendaText
-                }).then(() => {
-                    alert('Agenda sauvegardé !');
-                }).catch((error) => {
-                    alert(error.message);
-                });
-            } else {
-                alert('Vous devez être connecté pour sauvegarder l\'agenda.');
-            }
-        }
-
-        // Fonction pour charger l'agenda
-        function loadAgenda() {
-            const user = auth.currentUser;
-            if (user) {
-                get(ref(database, 'users/' + user.uid + '/agenda')).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        document.getElementById('agenda-text').value = snapshot.val().text;
-                    } else {
-                        alert('Aucune donnée trouvée.');
-                    }
-                }).catch((error) => {
-                    alert(error.message);
-                });
-            } else {
-                alert('Vous devez être connecté pour charger l\'agenda.');
-            }
-        }
-
-        // Fonction pour gérer l'état de connexion
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('logged-in').style.display = 'block';
-                document.getElementById('logged-out').style.display = 'none';
-            } else {
-                document.getElementById('logged-in').style.display = 'none';
-                document.getElementById('logged-out').style.display = 'block';
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById('logged-in').style.display = 'block';
+                    document.getElementById('logged-out').style.display = 'none';
+                    loadAgenda(user.uid); // Charger l'agenda au chargement
+                } else {
+                    document.getElementById('logged-in').style.display = 'none';
+                    document.getElementById('logged-out').style.display = 'block';
+                }
+            });
         });
 
-        // Fonction pour se déconnecter
-        function signOutUser() {
-            signOut(auth).then(() => {
-                alert("Déconnexion réussie !");
-                window.location.reload(); // Recharge la page pour mettre à jour l'état de connexion
+        function saveAgenda(userId, agendaText) {
+            set(ref(database, 'users/' + userId + '/agenda'), {
+                text: agendaText
+            }).then(() => {
+                alert('Agenda sauvegardé !');
             }).catch((error) => {
                 alert(error.message);
             });
         }
 
-        // Exposer les fonctions pour les boutons
-        window.saveAgenda = saveAgenda;
-        window.loadAgenda = loadAgenda;
-        window.signOutUser = signOutUser;
+        function loadAgenda(userId) {
+            get(ref(database, 'users/' + userId + '/agenda')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    document.getElementById('agenda-text').value = snapshot.val().text;
+                } else {
+                    alert('Aucune donnée trouvée.');
+                }
+            }).catch((error) => {
+                alert(error.message);
+            });
+        }
+
+        function signOutUser() {
+            signOut(auth).then(() => {
+                alert("Déconnexion réussie !");
+            }).catch((error) => {
+                alert(error.message);
+            });
+        }
     </script>
 </body>
 </html>
