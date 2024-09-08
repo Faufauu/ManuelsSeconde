@@ -15,60 +15,29 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Rowdies', sans-serif; /* Utilisation de Google Fonts */
-            background-image: url('fondécran.jpg'); /* Ajouter une image de fond */
-            background-size: cover; /* L'image couvre toute la page */
+            font-family: 'Rowdies', sans-serif;
+            background-image: url('fondécran.jpg'); /* Assurez-vous que ce chemin est correct */
+            background-size: cover;
             background-position: center;
             color: white;
             text-align: center;
-            background-attachment: fixed; /* Fixer l'image de fond */
+            background-attachment: fixed;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        h1, h2 {
-            margin: 20px 0;
-        }
-
-        input {
-            padding: 10px;
-            margin: 10px 0;
-            width: 80%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Styles spécifiques à index.html */
         h1 {
             margin-top: 50px;
             font-size: 36px;
+            position: relative;
+            z-index: 1;
+            padding: 0 20px;
         }
 
         .button-container {
             display: inline-block;
             margin: 20px;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         .button-container img {
@@ -85,9 +54,14 @@
 
         .button-container a {
             text-decoration: none;
-            color: black;
+            color: white;
             font-size: 20px;
             font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .button-container span {
             display: block;
             margin-top: 10px;
         }
@@ -122,15 +96,14 @@
     <div class="button-container">
         <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
             <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
-            <span>Mathématiques</span>
+            <span>Mathématiques</span> <!-- Placé directement sous l'image -->
         </a>
     </div>
 
-    <!-- Histoire-Géographie -->
     <div class="button-container">
         <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
             <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
-            <span>Histoire-Géographie</span>
+            <span>Histoire-Géographie</span> <!-- Placé directement sous l'image -->
         </a>
     </div>
 
@@ -163,17 +136,15 @@
         const database = getDatabase(app);
 
         // Gérer l'état d'authentification
-        document.addEventListener('DOMContentLoaded', function () {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    document.getElementById('logged-in').style.display = 'block';
-                    document.getElementById('logged-out').style.display = 'none';
-                    loadAgenda(user.uid); // Charger l'agenda au chargement
-                } else {
-                    document.getElementById('logged-in').style.display = 'none';
-                    document.getElementById('logged-out').style.display = 'block';
-                }
-            });
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('logged-in').style.display = 'block';
+                document.getElementById('logged-out').style.display = 'none';
+                loadAgenda(user.uid); // Charger l'agenda de l'utilisateur connecté
+            } else {
+                document.getElementById('logged-in').style.display = 'none';
+                document.getElementById('logged-out').style.display = 'block';
+            }
         });
 
         // Fonction pour sauvegarder l'agenda
@@ -183,7 +154,7 @@
             }).then(() => {
                 alert('Agenda sauvegardé !');
             }).catch((error) => {
-                alert(error.message);
+                alert('Erreur lors de la sauvegarde : ' + error.message);
             });
         }
 
@@ -196,7 +167,7 @@
                     alert('Aucune donnée trouvée.');
                 }
             }).catch((error) => {
-                alert(error.message);
+                alert('Erreur lors du chargement : ' + error.message);
             });
         }
 
