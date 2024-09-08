@@ -80,28 +80,24 @@
     </div>
 
     <!-- Importer les scripts Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+
+    <!-- Importer ton fichier de configuration Firebase -->
+    <script type="module" src="./firebase-config.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { firebaseConfig } from "./firebase-config.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-            authDomain: "manuelsseconde.firebaseapp.com",
-            databaseURL: "https://manuelsseconde.firebaseio.com",
-            projectId: "manuelsseconde",
-            storageBucket: "manuelsseconde.appspot.com",
-            messagingSenderId: "369461165606",
-            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7"
-        };
-
+        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const database = getDatabase(app);
 
         async function signup(email, password) {
             try {
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 alert("Inscription réussie !");
             } catch (error) {
                 alert(error.message);
@@ -110,37 +106,25 @@
 
         async function login(email, password) {
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 alert("Connexion réussie !");
             } catch (error) {
                 alert(error.message);
             }
         }
 
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('logged-in').style.display = 'block';
+                document.getElementById('logged-out').style.display = 'none';
+            } else {
+                document.getElementById('logged-in').style.display = 'none';
+                document.getElementById('logged-out').style.display = 'block';
+            }
+        });
+
         function goToMain() {
-            window.location.href = "index.html";
-        }
-
-        function saveAgenda(userId, agendaText) {
-            set(ref(database, 'users/' + userId + '/agenda'), {
-                text: agendaText
-            }).then(() => {
-                alert('Agenda sauvegardé !');
-            }).catch((error) => {
-                alert(error.message);
-            });
-        }
-
-        function loadAgenda(userId) {
-            get(ref(database, 'users/' + userId + '/agenda')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    document.getElementById('agenda-text').value = snapshot.val().text;
-                } else {
-                    alert('Aucune donnée trouvée.');
-                }
-            }).catch((error) => {
-                alert(error.message);
-            });
+            window.location.href = 'index.html'; // Redirige vers la page principale
         }
 
         function signOutUser() {
@@ -155,9 +139,6 @@
         window.signup = signup;
         window.login = login;
         window.goToMain = goToMain;
-        window.saveAgenda = saveAgenda;
-        window.loadAgenda = loadAgenda;
-        window.signOutUser = signOutUser;
     </script>
 </body>
 </html>
