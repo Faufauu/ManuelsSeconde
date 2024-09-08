@@ -6,13 +6,13 @@ import { signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth
 
 // Configuration Firebase
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
+    authDomain: "manuelsseconde.firebaseapp.com",
+    databaseURL: "https://manuelsseconde.firebaseio.com",
+    projectId: "manuelsseconde",
+    storageBucket : "manuelsseconde.appspot.com" ,
+    messagingSenderId: "369461165606",
+    appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7"
 };
 
 // Initialiser Firebase
