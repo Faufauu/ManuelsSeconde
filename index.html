@@ -6,7 +6,7 @@
     <title>Manuels Numériques</title>
     
     <!-- Importation de Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
 
     <style>
         /* Styles de base pour le body */
@@ -19,12 +19,15 @@
             background-position: center;
             color: white;
             text-align: center;
+            background-attachment: fixed; /* Fixer l'image de fond */
         }
 
         /* Centrer le titre */
         h1 {
             margin-top: 50px;
             font-size: 36px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Styles pour le conteneur des boutons */
@@ -32,6 +35,8 @@
             display: inline-block;
             margin: 20px;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         /* Styles pour les images */
@@ -41,6 +46,8 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
             transition: transform 0.3s;
+            position: relative;
+            top: 10px; /* Décalage vers le bas pour éviter la coupe */
         }
 
         /* Agrandir l'image au survol */
@@ -56,6 +63,8 @@
             font-weight: bold;
             display: block;
             margin-top: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Style pour le texte sous l'image */
@@ -65,13 +74,44 @@
         }
 
         /* Ombre sur le texte */
-        h1, .button-container span {
+        h1::before,
+        .button-container span::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            color: black;
+            z-index: 0;
+            text-shadow: none;
+        }
+
+        h1 {
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .button-container span {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: black;
+            z-index: -1;
+            opacity: 0.2;
         }
     </style>
 </head>
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
+
+    <!-- Texte d'arrière-plan -->
+    <div class="background-text">Tout les manuels de Seconde en 1 clic !</div>
 
     <!-- Mathématiques -->
     <div class="button-container">
