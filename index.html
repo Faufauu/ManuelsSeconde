@@ -31,6 +31,7 @@
             font-size: 36px;
             position: relative;
             z-index: 1;
+            padding: 0 20px; /* Ajoute un peu d'espace autour du titre */
         }
 
         /* Styles pour le conteneur des boutons */
@@ -76,45 +77,31 @@
             margin-top: 10px;
         }
 
-        /* Ombre sur le texte */
-        h1::before,
-        .button-container span::before {
-            content: attr(data-text);
-            position: absolute;
-            left: 1px;
-            top: 1px;
-            color: black;
-            z-index: 0;
-            text-shadow: none;
-        }
-
-        h1 {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .button-container span {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
+        /* Texte d'arrière-plan */
         .background-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 50px;
-            color: black;
+            color: rgba(0, 0, 0, 0.3); /* Ajuste l'opacité pour un effet d'ombre */
             z-index: -1;
-            opacity: 0.2;
+            white-space: nowrap;
+            overflow: hidden;
+            pointer-events: none; /* Assure que le texte d'arrière-plan n'interfère pas avec les clics */
+        }
+
+        /* Ombre sur le texte */
+        h1, .button-container span {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
 <body>
-    <h1>Tout les manuels de Seconde en 1 clic !</h1>
-
     <!-- Texte d'arrière-plan -->
     <div class="background-text">Tout les manuels de Seconde en 1 clic !</div>
+
+    <h1>Tout les manuels de Seconde en 1 clic !</h1>
 
     <!-- Mathématiques -->
     <div class="button-container">
