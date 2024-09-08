@@ -82,37 +82,44 @@
     <!-- Importer les scripts Firebase via un seul script module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Fonction pour l'inscription
         async function signup(email, password) {
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await createUserWithEmailAndPassword(auth, email, password);
                 alert("Inscription réussie !");
             } catch (error) {
                 alert(error.message);
             }
         }
 
-        // Fonction pour la connexion
         async function login(email, password) {
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                await signInWithEmailAndPassword(auth, email, password);
                 alert("Connexion réussie !");
             } catch (error) {
                 alert(error.message);
             }
         }
 
-        // Fonction pour rediriger vers la page principale
         function goToMain() {
-            window.location.href = 'index.html'; // Redirige vers la page principale
+            window.location.href = "index.html";
         }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('signup-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'none';
+            } else {
+                document.getElementById('signup-section').style.display = 'block';
+                document.getElementById('login-section').style.display = 'block';
+            }
+        });
 
         // Exposer les fonctions pour les boutons
         window.signup = signup;
