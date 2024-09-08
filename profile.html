@@ -80,17 +80,10 @@
     </div>
 
     <!-- Importer les scripts Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
-
-    <!-- Importer ton fichier de configuration Firebase -->
-    <script type="module" src="firebase-config.js"></script>
-
-    <script>
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { firebaseConfig } from "./firebase-config.js"; // Assure-toi que le chemin est correct
+    <script type="module">
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { firebaseConfig } from './firebase-config.js'; // Assure-toi que le chemin est correct
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
@@ -119,6 +112,11 @@
         function goToMain() {
             window.location.href = "index.html"; // Redirection vers la page principale
         }
+
+        // Exposer les fonctions pour les boutons
+        window.signup = signup;
+        window.login = login;
+        window.goToMain = goToMain;
     </script>
 </body>
 </html>
