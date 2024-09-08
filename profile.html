@@ -79,22 +79,17 @@
         <button onclick="goToMain()">Accéder aux Manuels</button>
     </div>
 
-    <!-- Importer les scripts Firebase -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-
-    <!-- Importer ton fichier de configuration Firebase -->
-    <script type="module" src="./firebase-config.js"></script>
-
+    <!-- Importer les scripts Firebase via un seul script module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Fonction pour l'inscription
         async function signup(email, password) {
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -104,6 +99,7 @@
             }
         }
 
+        // Fonction pour la connexion
         async function login(email, password) {
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -113,26 +109,9 @@
             }
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('logged-in').style.display = 'block';
-                document.getElementById('logged-out').style.display = 'none';
-            } else {
-                document.getElementById('logged-in').style.display = 'none';
-                document.getElementById('logged-out').style.display = 'block';
-            }
-        });
-
+        // Fonction pour rediriger vers la page principale
         function goToMain() {
             window.location.href = 'index.html'; // Redirige vers la page principale
-        }
-
-        function signOutUser() {
-            signOut(auth).then(() => {
-                alert("Déconnexion réussie !");
-            }).catch((error) => {
-                alert(error.message);
-            });
         }
 
         // Exposer les fonctions pour les boutons
