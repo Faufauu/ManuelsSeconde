@@ -132,12 +132,12 @@
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        window.auth = getAuth(app);  // Expose auth globally
         const database = getDatabase(app);
 
         // Fonction pour sauvegarder l'agenda
-        function saveAgenda() {
-            const user = auth.currentUser;
+        window.saveAgenda = function() {
+            const user = window.auth.currentUser;
             if (user) {
                 const agendaText = document.getElementById('agenda-text').value;
                 set(ref(database, 'users/' + user.uid + '/agenda'), {
@@ -153,8 +153,8 @@
         }
 
         // Fonction pour charger l'agenda
-        function loadAgenda() {
-            const user = auth.currentUser;
+        window.loadAgenda = function() {
+            const user = window.auth.currentUser;
             if (user) {
                 get(ref(database, 'users/' + user.uid + '/agenda')).then((snapshot) => {
                     if (snapshot.exists()) {
@@ -171,8 +171,8 @@
         }
 
         // Fonction pour se déconnecter
-        function signOutUser() {
-            signOut(auth).then(() => {
+        window.signOutUser = function() {
+            signOut(window.auth).then(() => {
                 alert("Déconnexion réussie !");
             }).catch((error) => {
                 alert(error.message);
@@ -180,21 +180,16 @@
         }
 
         // Gérer l'état d'authentification
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(window.auth, (user) => {
             if (user) {
                 document.getElementById('logged-in').style.display = 'block';
                 document.getElementById('logged-out').style.display = 'none';
-                loadAgenda(); // Charger l'agenda de l'utilisateur connecté
+                window.loadAgenda(); // Charger l'agenda de l'utilisateur connecté
             } else {
                 document.getElementById('logged-in').style.display = 'none';
                 document.getElementById('logged-out').style.display = 'block';
             }
         });
-
-        // Exposer les fonctions pour les boutons
-        window.saveAgenda = saveAgenda;
-        window.loadAgenda = loadAgenda;
-        window.signOutUser = signOutUser;
     </script>
 </body>
 </html>
