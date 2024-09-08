@@ -4,30 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuels Numériques</title>
+    
+    <!-- Importation de Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+
     <style>
+        /* Styles de base pour le body */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif; /* Utilisation de Google Fonts */
+            background-image: url('fondécran.jpg'); /* Ajouter une image de fond */
+            background-size: cover; /* L'image couvre toute la page */
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+
+        /* Centrer le titre */
+        h1 {
+            margin-top: 50px;
+            font-size: 36px;
+        }
+
+        /* Styles pour le conteneur des boutons */
         .button-container {
             display: inline-block;
             margin: 20px;
             text-align: center;
         }
+
+        /* Styles pour les images */
         .button-container img {
             width: 200px;
             height: auto;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s;
         }
+
+        /* Agrandir l'image au survol */
+        .button-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Styles pour les liens */
         .button-container a {
             text-decoration: none;
-            color: black;
-            font-size: 18px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
             display: block;
             margin-top: 10px;
+        }
+
+        /* Ombre sur le texte */
+        h1, .button-container a {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
 
+    <!-- Mathématiques -->
     <div class="button-container">
         <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
             <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
