@@ -81,12 +81,10 @@
 
     <!-- Importer les scripts Firebase -->
     <script type="module">
-        // Importer les fonctions nécessaires depuis SDK Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
             authDomain: "manuelsseconde.firebaseapp.com",
@@ -97,14 +95,13 @@
             appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7"
         };
 
-        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
         async function signup(email, password) {
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await createUserWithEmailAndPassword(auth, email, password);
                 alert("Inscription réussie !");
             } catch (error) {
                 alert(error.message);
@@ -113,11 +110,15 @@
 
         async function login(email, password) {
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                await signInWithEmailAndPassword(auth, email, password);
                 alert("Connexion réussie !");
             } catch (error) {
                 alert(error.message);
             }
+        }
+
+        function goToMain() {
+            window.location.href = "index.html";
         }
 
         function saveAgenda(userId, agendaText) {
@@ -141,16 +142,6 @@
                 alert(error.message);
             });
         }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('logged-in').style.display = 'block';
-                document.getElementById('logged-out').style.display = 'none';
-            } else {
-                document.getElementById('logged-in').style.display = 'none';
-                document.getElementById('logged-out').style.display = 'block';
-            }
-        });
 
         function signOutUser() {
             signOut(auth).then(() => {
