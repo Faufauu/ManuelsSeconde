@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuels Secondes</title>
+    <title>Manuels Seconde</title>
     
     <!-- Importation de Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
@@ -80,6 +80,11 @@
         #logged-out {
             margin-top: 20px;
         }
+
+        #loading-indicator {
+            display: none;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -119,9 +124,10 @@
         <div id="text-container">
             <h2>Mon Texte Personnel</h2>
             <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
-            <button onclick="saveUserText()">Sauvegarder</button>
-            <button onclick="loadUserText()">Charger</button>
+            <button onclick="saveUserText(auth.currentUser.uid, document.getElementById('user-text').value)">Sauvegarder</button>
+            <button onclick="loadUserText(auth.currentUser.uid)">Charger</button>
             <button onclick="signOutUser()">Se Déconnecter</button>
+            <div id="loading-indicator">Chargement...</div>
         </div>
     </div>
 
@@ -147,7 +153,7 @@
             if (user) {
                 document.getElementById('logged-in').style.display = 'block';
                 document.getElementById('logged-out').style.display = 'none';
-                loadUserText(); // Charger le texte de l'utilisateur connecté
+                loadUserText(user.uid); // Charger le texte de l'utilisateur connecté
             } else {
                 document.getElementById('logged-in').style.display = 'none';
                 document.getElementById('logged-out').style.display = 'block';
@@ -155,53 +161,43 @@
         });
 
         // Fonction pour sauvegarder le texte
-        async function saveUserText() {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userText = document.getElementById('user-text').value;
-                try {
-                    await set(ref(database, 'users/' + userId + '/text'), {
-                        text: userText
-                    });
-                    alert('Texte sauvegardé !');
-                } catch (error) {
-                    alert('Erreur lors de la sauvegarde : ' + error.message);
-                }
-            } else {
-                alert('Utilisateur non connecté.');
-            }
+        function saveUserText(userId, userText) {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            loadingIndicator.style.display = 'block';
+
+            set(ref(database, 'users/' + userId + '/text'), {
+                text: userText
+            }).then(() => {
+                alert('Texte sauvegardé !');
+                loadingIndicator.style.display = 'none';
+            }).catch((error) => {
+                console.error('Erreur lors de la sauvegarde :', error);
+                alert('Erreur lors de la sauvegarde : ' + error.message);
+                loadingIndicator.style.display = 'none';
+            });
         }
 
         // Fonction pour charger le texte
-        async function loadUserText() {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                try {
-                    const snapshot = await get(ref(database, 'users/' + userId + '/text'));
-                    if (snapshot.exists()) {
-                        document.getElementById('user-text').value = snapshot.val().text;
-                    } else {
-                        document.getElementById('user-text').value = ''; // Efface le texte s'il n'existe pas
-                        alert('Aucune donnée trouvée.');
-                    }
-                } catch (error) {
-                    alert('Erreur lors du chargement : ' + error.message);
+        function loadUserText(userId) {
+            get(ref(database, 'users/' + userId + '/text')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    document.getElementById('user-text').value = snapshot.val().text;
+                } else {
+                    alert('Aucune donnée trouvée.');
                 }
-            } else {
-                alert('Utilisateur non connecté.');
-            }
+            }).catch((error) => {
+                console.error('Erreur lors du chargement :', error);
+                alert('Erreur lors du chargement : ' + error.message);
+            });
         }
 
         // Fonction pour se déconnecter
-        async function signOutUser() {
-            try {
-                await signOut(auth);
+        function signOutUser() {
+            signOut(auth).then(() => {
                 alert("Déconnexion réussie !");
-            } catch (error) {
+            }).catch((error) => {
                 alert(error.message);
-            }
+            });
         }
 
         // Exposer les fonctions pour les boutons
