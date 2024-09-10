@@ -155,49 +155,53 @@
         });
 
         // Fonction pour sauvegarder le texte
-        function saveUserText() {
+        async function saveUserText() {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
                 const userText = document.getElementById('user-text').value;
-                set(ref(database, 'users/' + userId + '/text'), {
-                    text: userText
-                }).then(() => {
+                try {
+                    await set(ref(database, 'users/' + userId + '/text'), {
+                        text: userText
+                    });
                     alert('Texte sauvegardé !');
-                }).catch((error) => {
+                } catch (error) {
                     alert('Erreur lors de la sauvegarde : ' + error.message);
-                });
+                }
             } else {
                 alert('Utilisateur non connecté.');
             }
         }
 
         // Fonction pour charger le texte
-        function loadUserText() {
+        async function loadUserText() {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
-                get(ref(database, 'users/' + userId + '/text')).then((snapshot) => {
+                try {
+                    const snapshot = await get(ref(database, 'users/' + userId + '/text'));
                     if (snapshot.exists()) {
                         document.getElementById('user-text').value = snapshot.val().text;
                     } else {
+                        document.getElementById('user-text').value = ''; // Efface le texte s'il n'existe pas
                         alert('Aucune donnée trouvée.');
                     }
-                }).catch((error) => {
+                } catch (error) {
                     alert('Erreur lors du chargement : ' + error.message);
-                });
+                }
             } else {
                 alert('Utilisateur non connecté.');
             }
         }
 
         // Fonction pour se déconnecter
-        function signOutUser() {
-            signOut(auth).then(() => {
+        async function signOutUser() {
+            try {
+                await signOut(auth);
                 alert("Déconnexion réussie !");
-            }).catch((error) => {
+            } catch (error) {
                 alert(error.message);
-            });
+            }
         }
 
         // Exposer les fonctions pour les boutons
