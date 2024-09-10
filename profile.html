@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Utilisateur</title>
-
-    <!-- Importation de Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
-
-    <!-- Ajouter le favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-
     <style>
         body {
             margin: 0;
@@ -19,7 +14,6 @@
             background: #f0f0f0;
             text-align: center;
         }
-
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -28,11 +22,9 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
         h1, h2 {
             margin: 20px 0;
         }
-
         input {
             padding: 10px;
             margin: 10px 0;
@@ -40,17 +32,15 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-
         button {
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
             background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            margin: 10px;
+            margin-top: 10px;
         }
-
         button:hover {
             background-color: #0056b3;
         }
@@ -58,70 +48,27 @@
 </head>
 <body>
     <div class="container">
-        <h1>Connexion / Inscription</h1>
-
-        <!-- Formulaire de connexion -->
-        <h2>Connexion</h2>
-        <input type="email" id="login-email" placeholder="Adresse e-mail" />
-        <input type="password" id="login-password" placeholder="Mot de passe" />
-        <button onclick="login()">Se Connecter</button>
-
+        <h1>Profil Utilisateur</h1>
         <!-- Formulaire d'inscription -->
-        <h2>Inscription</h2>
-        <input type="email" id="signup-email" placeholder="Adresse e-mail" />
-        <input type="password" id="signup-password" placeholder="Mot de passe" />
-        <button onclick="signup()">S'inscrire</button>
-
-        <!-- Lien de retour -->
-        <p><a href="index.html">Retour à la page d'accueil</a></p>
+        <div id="signup-section">
+            <h2>Inscription</h2>
+            <input type="email" id="signup-email" placeholder="Email">
+            <input type="password" id="signup-password" placeholder="Mot de passe">
+            <button onclick="signup(document.getElementById('signup-email').value, document.getElementById('signup-password').value)">S'inscrire</button>
+        </div>
+        <!-- Formulaire de connexion -->
+        <div id="login-section">
+            <h2>Connexion</h2>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Mot de passe">
+            <button onclick="login(document.getElementById('login-email').value, document.getElementById('login-password').value)">Se connecter</button>
+        </div>
+        <button onclick="goToMain()">Accéder aux Manuels</button>
     </div>
 
-    <!-- Importer les scripts Firebase via un seul script module -->
+    <!-- Importer les scripts Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
-        // Initialiser Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Fonction pour l'inscription
-        function signup() {
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Inscription réussie
-                    alert('Inscription réussie !');
-                })
-                .catch((error) => {
-                    console.error('Erreur lors de l\'inscription :', error);
-                    alert('Erreur lors de l\'inscription : ' + error.message);
-                });
-        }
-
-        // Fonction pour la connexion
-        function login() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Connexion réussie
-                    alert('Connexion réussie !');
-                    window.location.href = 'index.html'; // Redirection vers la page d'accueil
-                })
-                .catch((error) => {
-                    console.error('Erreur lors de la connexion :', error);
-                    alert('Erreur lors de la connexion : ' + error.message);
-                });
-        }
-
-        // Exposer les fonctions pour les boutons
-        window.signup = signup;
-        window.login = login;
-    </script>
-</body>
-</html>
