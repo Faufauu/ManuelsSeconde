@@ -72,3 +72,37 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Fonction d'inscription
+        function signup(email, password) {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Inscription réussie !");
+                })
+                .catch((error) => {
+                    alert("Erreur lors de l'inscription : " + error.message);
+                });
+        }
+
+        // Fonction de connexion
+        function login(email, password) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Connexion réussie !");
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    alert("Erreur lors de la connexion : " + error.message);
+                });
+        }
+
+        // Rediriger l'utilisateur vers la page principale
+        function goToMain() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
