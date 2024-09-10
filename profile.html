@@ -43,12 +43,12 @@
 
         button {
             padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 5px;
+            background-color: #007bff;
+            color: white;
             cursor: pointer;
-            margin-top: 10px;
+            margin: 10px;
         }
 
         button:hover {
@@ -58,73 +58,70 @@
 </head>
 <body>
     <div class="container">
-        <h1>Profil Utilisateur</h1>
-        
-        <!-- Formulaire d'inscription -->
-        <div id="signup-section">
-            <h2>Inscription</h2>
-            <input type="email" id="signup-email" placeholder="Email">
-            <input type="password" id="signup-password" placeholder="Mot de passe">
-            <button onclick="signup(document.getElementById('signup-email').value, document.getElementById('signup-password').value)">S'inscrire</button>
-        </div>
-        
+        <h1>Connexion / Inscription</h1>
+
         <!-- Formulaire de connexion -->
-        <div id="login-section">
-            <h2>Connexion</h2>
-            <input type="email" id="login-email" placeholder="Email">
-            <input type="password" id="login-password" placeholder="Mot de passe">
-            <button onclick="login(document.getElementById('login-email').value, document.getElementById('login-password').value)">Se connecter</button>
-        </div>
-        
-        <button onclick="goToMain()">Accéder aux Manuels</button>
+        <h2>Connexion</h2>
+        <input type="email" id="login-email" placeholder="Adresse e-mail" />
+        <input type="password" id="login-password" placeholder="Mot de passe" />
+        <button onclick="login()">Se Connecter</button>
+
+        <!-- Formulaire d'inscription -->
+        <h2>Inscription</h2>
+        <input type="email" id="signup-email" placeholder="Adresse e-mail" />
+        <input type="password" id="signup-password" placeholder="Mot de passe" />
+        <button onclick="signup()">S'inscrire</button>
+
+        <!-- Lien de retour -->
+        <p><a href="index.html">Retour à la page d'accueil</a></p>
     </div>
 
     <!-- Importer les scripts Firebase via un seul script module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        async function signup(email, password) {
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                alert("Inscription réussie !");
-            } catch (error) {
-                alert(error.message);
-            }
+        // Fonction pour l'inscription
+        function signup() {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Inscription réussie
+                    alert('Inscription réussie !');
+                })
+                .catch((error) => {
+                    console.error('Erreur lors de l\'inscription :', error);
+                    alert('Erreur lors de l\'inscription : ' + error.message);
+                });
         }
 
-        async function login(email, password) {
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert("Connexion réussie !");
-            } catch (error) {
-                alert(error.message);
-            }
-        }
+        // Fonction pour la connexion
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
 
-        function goToMain() {
-            window.location.href = "index.html";
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Connexion réussie
+                    alert('Connexion réussie !');
+                    window.location.href = 'index.html'; // Redirection vers la page d'accueil
+                })
+                .catch((error) => {
+                    console.error('Erreur lors de la connexion :', error);
+                    alert('Erreur lors de la connexion : ' + error.message);
+                });
         }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('signup-section').style.display = 'none';
-                document.getElementById('login-section').style.display = 'none';
-            } else {
-                document.getElementById('signup-section').style.display = 'block';
-                document.getElementById('login-section').style.display = 'block';
-            }
-        });
 
         // Exposer les fonctions pour les boutons
         window.signup = signup;
         window.login = login;
-        window.goToMain = goToMain;
     </script>
 </body>
 </html>
