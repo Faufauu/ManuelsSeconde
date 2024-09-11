@@ -81,11 +81,13 @@
     </div>
 
     <script type="module">
-        // Import Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, onChildRemoved, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+    // Import Firebase SDK avec des versions cohérentes
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, set, onChildAdded, onChildRemoved, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    // Importez getAnalytics uniquement si nécessaire
+    // import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
 
-        const firebaseConfig = {
+    const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
             authDomain: "manuelsseconde.firebaseapp.com",
             databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
