@@ -39,13 +39,22 @@
         }
 
         .button-container {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
         }
 
-        .button-container img {
+        .button-container a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .image-container img {
             width: 200px;
             height: auto;
             border-radius: 10px;
@@ -53,15 +62,18 @@
             transition: transform 0.3s;
         }
 
-        .button-container img:hover {
+        .image-container img:hover {
             transform: scale(1.05);
         }
 
-        .button-container span {
+        .manual-text {
+            position: absolute;
+            bottom: 10px; /* Distance depuis le bas de l'image */
+            left: 50%;
+            transform: translateX(-50%);
             color: white; /* Texte blanc */
             text-shadow: 1px 1px 3px black; /* Contours noirs */
-            font-size: 16px; /* Ajustez la taille de police si nécessaire */
-            margin-top: 10px; /* Espace au-dessus du texte */
+            font-size: 16px;
         }
 
         #logged-out, #agenda-button, #sign-out-button {
@@ -119,33 +131,41 @@
     <div class="manuals-container">
         <!-- Mathématiques -->
         <div class="button-container">
-            <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
-                <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
-                <span>Mathématiques</span>
+            <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank" class="manual-link">
+                <div class="image-container">
+                    <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
+                    <span class="manual-text">Mathématiques</span>
+                </div>
             </a>
         </div>
 
         <!-- Histoire-Géographie -->
         <div class="button-container">
-            <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
-                <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
-                <span>Histoire-Géographie</span>
+            <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank" class="manual-link">
+                <div class="image-container">
+                    <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
+                    <span class="manual-text">Histoire-Géographie</span>
+                </div>
             </a>
         </div>
 
         <!-- Lingua -->
         <div class="button-container">
-            <a href="https://lingua.com/fr/" target="_blank">
-                <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
-                <span>Lingua</span>
+            <a href="https://lingua.com/fr/" target="_blank" class="manual-link">
+                <div class="image-container">
+                    <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
+                    <span class="manual-text">Lingua</span>
+                </div>
             </a>
         </div>
 
         <!-- Allemand -->
         <div class="button-container">
-            <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
-                <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
-                <span>Allemand</span>
+            <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank" class="manual-link">
+                <div class="image-container">
+                    <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
+                    <span class="manual-text">Allemand</span>
+                </div>
             </a>
         </div>
     </div>
