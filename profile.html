@@ -58,14 +58,6 @@
             margin: 20px 0;
             font-size: 18px;
         }
-        #message-container {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -89,8 +81,6 @@
         <button onclick="signUp()">S'inscrire</button>
     </div>
 
-    <div id="message-container"></div>
-
     <!-- Scripts Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -100,17 +90,18 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Fonction de Connexion
+        // Fonction de Connexion avec redirection
         function login() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    document.getElementById('message-container').innerHTML = `<p>Connexion réussie pour ${email}.</p>`;
+                .then(() => {
+                    // Rediriger vers la page principale après connexion
+                    window.location.href = 'index.html';
                 })
                 .catch((error) => {
-                    document.getElementById('message-container').innerHTML = `<p>Erreur lors de la connexion : ${error.message}</p>`;
+                    alert('Erreur lors de la connexion : ' + error.message);
                 });
         }
 
@@ -120,11 +111,11 @@
             const password = document.getElementById('signup-password').value;
 
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    document.getElementById('message-container').innerHTML = `<p>Inscription réussie pour ${email}.</p>`;
+                .then(() => {
+                    alert('Inscription réussie, vous pouvez maintenant vous connecter.');
                 })
                 .catch((error) => {
-                    document.getElementById('message-container').innerHTML = `<p>Erreur lors de l'inscription : ${error.message}</p>`;
+                    alert('Erreur lors de l\'inscription : ' + error.message);
                 });
         }
 
