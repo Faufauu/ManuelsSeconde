@@ -4,45 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Utilisateur</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Rowdies', sans-serif;
-            background: #f0f0f0;
-            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        h1, h2 {
-            margin: 20px 0;
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
         }
         input {
+            width: 100%;
             padding: 10px;
             margin: 10px 0;
-            width: 80%;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 16px;
         }
         button {
-            padding: 10px 20px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .secondary-button {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        .secondary-button:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
@@ -51,36 +67,42 @@
         <h1>Profil Utilisateur</h1>
         <!-- Formulaire d'inscription -->
         <div id="signup-section">
-            <h2>Inscription</h2>
             <input type="email" id="signup-email" placeholder="Email">
             <input type="password" id="signup-password" placeholder="Mot de passe">
-            <button onclick="signup(document.getElementById('signup-email').value, document.getElementById('signup-password').value)">S'inscrire</button>
+            <button onclick="signup()">S'inscrire</button>
         </div>
         <!-- Formulaire de connexion -->
         <div id="login-section">
-            <h2>Connexion</h2>
             <input type="email" id="login-email" placeholder="Email">
             <input type="password" id="login-password" placeholder="Mot de passe">
-            <button onclick="login(document.getElementById('login-email').value, document.getElementById('login-password').value)">Se connecter</button>
+            <button onclick="login()">Se connecter</button>
         </div>
-        <button onclick="goToMain()">Accéder aux Manuels</button>
+        <button class="secondary-button" onclick="goToMain()">Accéder aux Manuels</button>
     </div>
 
-    <!-- Importer les scripts Firebase -->
+    <!-- Importer les scripts Firebase et EmailJS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
+        import emailjs from "https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js";
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Initialiser EmailJS avec votre UserID
+        emailjs.init('dddsB0iDVKS5WTcz8');  // Remplacez par votre propre userID
+
         // Fonction d'inscription
-        function signup(email, password) {
+        function signup() {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     alert("Inscription réussie !");
+                    sendEmail(email, 'Bienvenue', 'Merci de vous être inscrit.');
                 })
                 .catch((error) => {
                     alert("Erreur lors de l'inscription : " + error.message);
@@ -88,11 +110,15 @@
         }
 
         // Fonction de connexion
-        function login(email, password) {
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     alert("Connexion réussie !");
                     window.location.href = "index.html";
+                    sendEmail(email, 'Connexion', 'Vous vous êtes connecté avec succès.');
                 })
                 .catch((error) => {
                     alert("Erreur lors de la connexion : " + error.message);
@@ -102,6 +128,20 @@
         // Rediriger l'utilisateur vers la page principale
         function goToMain() {
             window.location.href = "index.html";
+        }
+
+        // Fonction pour envoyer un e-mail via EmailJS
+        function sendEmail(toEmail, subject, message) {
+            emailjs.send('service_8lehz4x', 'template_xxgdgj3', {
+                to_email: toEmail,
+                subject: subject,
+                message: message
+            })
+            .then((response) => {
+                console.log('E-mail envoyé avec succès !', response.status, response.text);
+            }, (error) => {
+                console.error('Erreur lors de l\'envoi de l\'e-mail :', error);
+            });
         }
 
         // Exposer les fonctions pour les boutons
