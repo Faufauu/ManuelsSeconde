@@ -77,7 +77,7 @@
 
     <div id="sendMsg">
         <input type="text" id="msgTxt" placeholder="Message...">
-        <input type="submit" id="msgBtn" value="send" onclick="sendMsg()">
+        <input type="submit" id="msgBtn" value="send">
     </div>
 
     <script type="module">
@@ -121,6 +121,9 @@
 
             msgTxt.value = "";
         }
+
+        // Attache l'événement `click` dynamiquement
+        document.getElementById('msgBtn').addEventListener('click', sendMsg);
 
         // TO RECEIVE MSG
         onChildAdded(ref(db, "messages"), (data) => {
