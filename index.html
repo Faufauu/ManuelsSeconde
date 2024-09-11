@@ -44,16 +44,16 @@
             text-decoration: none;
             color: white;
         }
-        .button-container img {
-            margin-bottom: 10px;
-        }
         #text-container {
             margin-top: 50px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
             color: white;
             text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         #user-text {
             width: 100%;
@@ -62,109 +62,77 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             margin-top: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
         }
-        #logged-out {
-            margin-top: 20px;
+        #text-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #text-container button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
-    <!-- Mathématiques -->
-    <div class="button-container">
-        <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
-            <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
-            <span>Mathématiques</span>
-        </a>
+
+    <!-- Text to be sent via email -->
+    <div id="text-container">
+        <h2>Mon Texte Personnel</h2>
+        <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
+        <button onclick="sendTextByEmail(auth.currentUser.email, document.getElementById('user-text').value)">Envoyer par Email</button>
+        <button onclick="signOutUser()">Se Déconnecter</button>
     </div>
 
-    <div class="button-container">
-        <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
-            <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
-            <span>Histoire-Géographie</span>
-        </a>
-    </div>
-
-    <div class="button-container">
-        <a href="https://lingua.com/fr/" target="_blank">
-            <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
-            <span>Lingua</span>
-        </a>
-    </div>
-
-    <div class="button-container">
-        <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
-            <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
-            <span>Allemand</span>
-        </a>
-    </div>
-    <!-- Autres sections -->
-    <div id="logged-in" style="display: none;">
-        <div id="text-container">
-            <h2>Mon Texte Personnel</h2>
-            <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
-            <button onclick="sendTextByEmail(auth.currentUser.email, document.getElementById('user-text').value)">Envoyer par Email</button>
-            <button onclick="signOutUser()">Se Déconnecter</button>
-        </div>
-    </div>
-    <div id="logged-out">
-        <a href="profile.html">Accéder au Profil</a>
-    </div>
-
-    <!-- Importer les scripts Firebase et EmailJS -->
+    <!-- Firebase and EmailJS Scripts -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
-        
-        // Initialiser Firebase
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Initialiser EmailJS avec votre Public Key (User ID)
-        emailjs.init('dddsB0iDVKS5WTcz8'); // Remplacez 'dddsB0iDVKS5WTcz8' par votre Public Key
+        emailjs.init('dddsB0iDVKS5WTcz8');
 
-        // Gérer l'état d'authentification
+        // Manage authentication state
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('logged-in').style.display = 'block';
-                document.getElementById('logged-out').style.display = 'none';
+                document.getElementById('text-container').style.display = 'block';
             } else {
-                document.getElementById('logged-in').style.display = 'none';
-                document.getElementById('logged-out').style.display = 'block';
+                window.location.href = 'profile.html';
             }
         });
 
-        // Fonction pour envoyer le texte par email
-        function sendTextByEmail(userEmail, userText) {
+        // Send text via EmailJS
+        function sendTextByEmail(email, message) {
             const templateParams = {
-                user_email: userEmail,
-                user_text: userText
+                to_email: email,
+                message: message
             };
 
-            emailjs.send('service_8lehz4x', 'template_xxgdgj3', templateParams)
-                .then((response) => {
-                    console.log('Succès de l\'envoi de l\'email:', response);
-                    alert('Texte envoyé par email !');
+            emailjs.send('service_xxxxx', 'template_xxxxx', templateParams)
+                .then(() => {
+                    alert('Message envoyé avec succès');
                 }, (error) => {
-                    console.error('Erreur lors de l\'envoi de l\'email:', error);
-                    alert('Erreur lors de l\'envoi de l\'email : ' + error.text);
+                    alert('Échec de l\'envoi : ' + error.text);
                 });
         }
 
-        // Fonction pour se déconnecter
+        // Sign out user
         function signOutUser() {
             signOut(auth).then(() => {
-                alert("Déconnexion réussie !");
-            }).catch((error) => {
-                alert(error.message);
+                window.location.href = 'profile.html';
             });
         }
-
-        // Exposer les fonctions pour les boutons
-        window.sendTextByEmail = sendTextByEmail;
-        window.signOutUser = signOutUser;
     </script>
 </body>
 </html>
