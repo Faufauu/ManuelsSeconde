@@ -79,22 +79,26 @@
         }
         #logged-in {
             margin-top: 20px;
+            position: relative;
         }
-        #logged-in #agenda-button {
-            margin-top: 30px;
-            background-color: #2196F3;
-            border: none;
+        #agenda-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff;
             color: white;
-            padding: 15px 30px;
-            text-align: center;
-            text-decoration: none;
+            border: none;
+            padding: 10px 20px;
             font-size: 18px;
             cursor: pointer;
             border-radius: 5px;
-            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.3s, transform 0.3s;
         }
-        #logged-in #agenda-button:hover {
-            background-color: #0b79d0;
+        #agenda-button:hover {
+            background-color: #0056b3;
+            transform: translateX(-50%) scale(1.05);
         }
         #logged-out {
             margin-top: 20px;
@@ -138,7 +142,12 @@
 
     <div id="logged-in" style="display: none;">
         <div id="text-container">
-            <button id="agenda-button" onclick="openAgenda()">Agenda</button>
+            <h2>Mon Texte Personnel</h2>
+            <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
+            <button onclick="sendMail()">S'envoyer par Email</button>
+            <button onclick="signOutUser()">Se Déconnecter</button>
+            <!-- Bouton Agenda -->
+            <button id="agenda-button" onclick="location.href='email.html'">Agenda</button>
         </div>
     </div>
 
@@ -146,30 +155,8 @@
         <a href="profile.html">Accéder au Profil</a>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-        import { firebaseConfig } from "./firebase-config.js";
-
-        // Initialiser Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Gérer l'état d'authentification
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('logged-in').style.display = 'block';
-                document.getElementById('logged-out').style.display = 'none';
-            } else {
-                document.getElementById('logged-in').style.display = 'none';
-                document.getElementById('logged-out').style.display = 'block';
-            }
-        });
-
-        // Fonction pour ouvrir la page Agenda
-        function openAgenda() {
-            window.location.href = 'email.html';
-        }
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
