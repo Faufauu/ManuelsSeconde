@@ -26,9 +26,17 @@
             margin-top: 50px;
             font-size: 36px;
         }
-        .button-container {
-            display: inline-block;
+        .manuals-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
             margin: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
         }
         .button-container img {
@@ -48,39 +56,27 @@
             text-decoration: none;
             color: white;
         }
-        #logged-out {
-            margin-top: 20px;
-        }
-        #agenda-button {
-            display: none;
-            position: absolute;
-            bottom: 60px;
+        #logged-out, #agenda-button, #sign-out-button {
+            position: fixed;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
+        }
+        #logged-out {
+            display: block;
+        }
+        #agenda-button, #sign-out-button {
+            display: none;
+        }
+        #agenda-button {
+            bottom: 60px;
             background-color: #4CAF50;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
         }
         #agenda-button:hover {
             background-color: #45a049;
         }
         #sign-out-button {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
             background-color: #f44336;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
         }
         #sign-out-button:hover {
             background-color: #d32f2f;
@@ -90,36 +86,38 @@
 <body>
     <h1>Tous les manuels de Seconde en 1 clic !</h1>
 
-    <!-- Mathématiques -->
-    <div class="button-container">
-        <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
-            <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
-            <span>Mathématiques</span>
-        </a>
-    </div>
+    <div class="manuals-container">
+        <!-- Mathématiques -->
+        <div class="button-container">
+            <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
+                <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
+                <span>Mathématiques</span>
+            </a>
+        </div>
 
-    <!-- Histoire-Géographie -->
-    <div class="button-container">
-        <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
-            <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
-            <span>Histoire-Géographie</span>
-        </a>
-    </div>
+        <!-- Histoire-Géographie -->
+        <div class="button-container">
+            <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
+                <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
+                <span>Histoire-Géographie</span>
+            </a>
+        </div>
 
-    <!-- Lingua -->
-    <div class="button-container">
-        <a href="https://lingua.com/fr/" target="_blank">
-            <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
-            <span>Lingua</span>
-        </a>
-    </div>
+        <!-- Lingua -->
+        <div class="button-container">
+            <a href="https://lingua.com/fr/" target="_blank">
+                <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
+                <span>Lingua</span>
+            </a>
+        </div>
 
-    <!-- Allemand -->
-    <div class="button-container">
-        <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
-            <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
-            <span>Allemand</span>
-        </a>
+        <!-- Allemand -->
+        <div class="button-container">
+            <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
+                <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
+                <span>Allemand</span>
+            </a>
+        </div>
     </div>
 
     <div id="logged-out">
