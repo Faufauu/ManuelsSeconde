@@ -47,13 +47,10 @@
         #text-container {
             margin-top: 50px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             border-radius: 10px;
             color: white;
             text-align: center;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
         }
         #user-text {
             width: 100%;
@@ -62,31 +59,32 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             margin-top: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            color: black;
-            font-family: 'Arial', sans-serif;
-            font-size: 16px;
-            resize: none;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            resize: vertical; /* Permet de redimensionner verticalement */
         }
-        #text-container button {
-            padding: 10px 20px;
+        button {
             background-color: #4CAF50;
-            color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
             font-size: 16px;
-            margin-top: 10px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
         }
-        #text-container button:hover {
+        button:hover {
             background-color: #45a049;
+        }
+        #logged-out {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
-    
+
     <!-- Mathématiques -->
     <div class="button-container">
         <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
@@ -95,6 +93,7 @@
         </a>
     </div>
 
+    <!-- Histoire-Géographie -->
     <div class="button-container">
         <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
             <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
@@ -102,30 +101,38 @@
         </a>
     </div>
 
-     <div class="button-container">
+    <!-- Lingua -->
+    <div class="button-container">
         <a href="https://lingua.com/fr/" target="_blank">
             <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
             <span>Lingua</span>
         </a>
     </div>
 
+    <!-- Allemand -->
     <div class="button-container">
         <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
             <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
             <span>Allemand</span>
         </a>
     </div>
-    
-    <!-- Section pour envoyer du texte par email (uniquement pour utilisateurs connectés) -->
-    <div id="text-container" style="display: none;">
-        <h2>Mon Texte Personnel</h2>
-        <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
-        <button onclick="sendTextByEmail()">Envoyer par Email</button>
-        <button onclick="signOutUser()">Se Déconnecter</button>
+
+    <div id="logged-in" style="display: none;">
+        <div id="text-container">
+            <h2>Mon Texte Personnel</h2>
+            <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
+            <button onclick="sendTextByEmail()">Envoyer par Email</button>
+            <button onclick="signOutUser()">Se Déconnecter</button>
+        </div>
     </div>
 
-    <!-- Scripts Firebase et EmailJS -->
+    <div id="logged-out">
+        <a href="profile.html">Accéder au Profil</a>
+    </div>
+
+    <!-- Inclure le SDK EmailJS -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
@@ -135,20 +142,29 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Initialiser EmailJS
-        emailjs.init('dddsB0iDVKS5WTcz8');  // Remplacez par votre Public Key
+        // Initialiser EmailJS avec la Public Key
+        emailjs.init('dddsB0iDVKS5WTcz8'); // Remplacez par votre Public Key
 
-        // Vérification de l'état de connexion
+        // Gérer l'état d'authentification
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Si l'utilisateur est connecté, afficher la zone de texte
-                document.getElementById('text-container').style.display = 'block';
+                document.getElementById('logged-in').style.display = 'block';
+                document.getElementById('logged-out').style.display = 'none';
+            } else {
+                document.getElementById('logged-in').style.display = 'none';
+                document.getElementById('logged-out').style.display = 'block';
             }
         });
 
         // Fonction pour envoyer le texte par email
         function sendTextByEmail() {
-            const userEmail = auth.currentUser.email;
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Vous devez être connecté pour envoyer un email.');
+                return;
+            }
+
+            const userEmail = user.email;
             const userText = document.getElementById('user-text').value;
 
             const templateParams = {
@@ -169,7 +185,7 @@
         // Fonction pour se déconnecter
         function signOutUser() {
             signOut(auth).then(() => {
-                window.location.href = 'profile.html';
+                window.location.href = 'index.html'; // Redirige vers la page principale après la déconnexion
             }).catch((error) => {
                 alert('Erreur lors de la déconnexion : ' + error.message);
             });
