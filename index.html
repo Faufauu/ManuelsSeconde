@@ -8,15 +8,12 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-</script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init({
-        publicKey: "dddsB0iDVKS5WTcz8",
-      });
-   })();
-</script>
-<script src="email.js"></script>
+    </script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("dddsB0iDVKS5WTcz8"); // Remplacez par votre Public Key
+       })();
+    </script>
     <style>
         body {
             margin: 0;
@@ -25,7 +22,7 @@
             background-image: url('fondécran.jpg');
             background-size: cover;
             background-position: center;
-            color: white;
+            color: black;
             text-align: center;
             background-attachment: fixed;
         }
@@ -70,7 +67,7 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             margin-top: 10px;
-            resize: vertical; /* Permet de redimensionner verticalement */
+            resize: vertical;
         }
         button {
             background-color: #4CAF50;
@@ -131,7 +128,7 @@
     <div id="logged-in" style="display: none;">
         <div id="text-container">
             <h2>Mon Texte Personnel</h2>
-            <textarea id="user-text" placeholder="Envoie toi un mail..."></textarea>
+            <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
             <button onclick="sendMail()">S'envoyer par Email</button>
             <button onclick="signOutUser()">Se Déconnecter</button>
         </div>
@@ -167,6 +164,14 @@
             }
         });
 
+        // Fonction pour envoyer le texte par email
+        function sendMail() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Vous devez être connecté pour envoyer un email.');
+                return;
+            }
+
             const userEmail = user.email;
             const userText = document.getElementById('user-text').value;
 
@@ -183,6 +188,7 @@
                     console.error('Erreur lors de l\'envoi de l\'email:', error);
                     alert('Erreur lors de l\'envoi de l\'email : ' + error.text);
                 });
+        }
 
         // Fonction pour se déconnecter
         function signOutUser() {
