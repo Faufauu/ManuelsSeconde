@@ -56,14 +56,24 @@
             text-decoration: none;
             color: white;
         }
-        #logged-out, #agenda-button, #sign-out-button {
+        #logged-out {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
         }
-        #logged-out {
-            display: block;
+        #logged-out a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f44336; /* Couleur de fond spécifique */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #logged-out a:hover {
+            background-color: #d32f2f; /* Couleur de fond au survol */
         }
         #agenda-button, #sign-out-button {
             padding: 10px 20px;
@@ -74,11 +84,19 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        #agenda-button {
+            display: none; /* Vérifiez cet affichage selon l'état de connexion */
+            bottom: 60px; /* Position spécifique pour le bouton Agenda */
         }
         #agenda-button:hover {
             background-color: #45a049;
         }
         #sign-out-button {
+            bottom: 20px; /* Position spécifique pour le bouton de déconnexion */
             background-color: #f44336;
         }
         #sign-out-button:hover {
