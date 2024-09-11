@@ -47,6 +47,20 @@
         #logged-out {
             margin-top: 20px;
         }
+        #agenda-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #agenda-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -87,5 +101,46 @@
     <div id="logged-out">
         <a href="profile.html">Accéder au Profil</a>
     </div>
+
+    <button id="agenda-button" onclick="openAgenda()">Agenda</button>
+
+    <!-- Scripts Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { firebaseConfig } from "./firebase-config.js";
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Gérer l'état d'authentification
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('logged-out').style.display = 'none';
+                document.getElementById('agenda-button').style.display = 'inline-block';
+            } else {
+                document.getElementById('logged-out').style.display = 'block';
+                document.getElementById('agenda-button').style.display = 'none';
+            }
+        });
+
+        // Fonction pour ouvrir la page "email.html"
+        function openAgenda() {
+            window.location.href = 'email.html';
+        }
+
+        // Fonction pour se déconnecter
+        function signOutUser() {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html'; // Redirige vers la page principale après la déconnexion
+            }).catch((error) => {
+                alert('Erreur lors de la déconnexion : ' + error.message);
+            });
+        }
+
+        // Exposer la fonction pour le bouton Agenda
+        window.openAgenda = openAgenda;
+    </script>
 </body>
 </html>
