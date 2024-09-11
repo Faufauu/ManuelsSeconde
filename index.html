@@ -6,17 +6,7 @@
     <title>Manuels Seconde</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
-    <script type="text/javascript">
-       (function(){
-          emailjs.init({
-            publicKey: "dddsB0iDVKS5WTcz8",
-          });
-       })();
-    </script>
-    <script src="email.js"></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -94,7 +84,7 @@
     </style>
 </head>
 <body>
-    <h1>Tout les manuels de Seconde en 1 clic !</h1>
+    <h1>Tous les manuels de Seconde en 1 clic !</h1>
 
     <!-- Mathématiques -->
     <div class="button-container">
@@ -141,9 +131,7 @@
         <a href="profile.html">Accéder au Profil</a>
     </div>
 
-    <!-- Inclure le SDK EmailJS -->
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-
+    <!-- Scripts Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
