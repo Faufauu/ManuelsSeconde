@@ -86,9 +86,38 @@
 </head>
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
+    
+    <!-- Mathématiques -->
+    <div class="button-container">
+        <a href="https://manuel.sesamath.net/numerique/?ouvrage=ms2_2023" target="_blank">
+            <img src="maths_cover.jpeg" alt="Manuel de Mathématiques">
+            <span>Mathématiques</span>
+        </a>
+    </div>
 
-    <!-- Section pour envoyer du texte par email -->
-    <div id="text-container">
+    <div class="button-container">
+        <a href="https://www.mesmanuels.fr/acces-libre/9782401083165" target="_blank">
+            <img src="histoire_cover.jpeg" alt="Manuel d'Histoire">
+            <span>Histoire-Géographie</span>
+        </a>
+    </div>
+
+     <div class="button-container">
+        <a href="https://lingua.com/fr/" target="_blank">
+            <img src="allemandLingua_cover.jpeg" alt="Exercice Allemand">
+            <span>Lingua</span>
+        </a>
+    </div>
+
+    <div class="button-container">
+        <a href="https://mesmanuels.fr/acces-libre/9782017102229" target="_blank">
+            <img src="allemand_cover.jpeg" alt="Manuel d'Allemand">
+            <span>Allemand</span>
+        </a>
+    </div>
+    
+    <!-- Section pour envoyer du texte par email (uniquement pour utilisateurs connectés) -->
+    <div id="text-container" style="display: none;">
         <h2>Mon Texte Personnel</h2>
         <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
         <button onclick="sendTextByEmail()">Envoyer par Email</button>
@@ -114,9 +143,6 @@
             if (user) {
                 // Si l'utilisateur est connecté, afficher la zone de texte
                 document.getElementById('text-container').style.display = 'block';
-            } else {
-                // Sinon, rediriger vers la page de connexion
-                window.location.href = 'profile.html';
             }
         });
 
