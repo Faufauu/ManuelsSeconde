@@ -64,6 +64,10 @@
             margin-top: 10px;
             background: rgba(255, 255, 255, 0.8);
             color: black;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            resize: none;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
         }
         #text-container button {
             padding: 10px 20px;
@@ -83,56 +87,71 @@
 <body>
     <h1>Tout les manuels de Seconde en 1 clic !</h1>
 
-    <!-- Text to be sent via email -->
+    <!-- Section pour envoyer du texte par email -->
     <div id="text-container">
         <h2>Mon Texte Personnel</h2>
         <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
-        <button onclick="sendTextByEmail(auth.currentUser.email, document.getElementById('user-text').value)">Envoyer par Email</button>
+        <button onclick="sendTextByEmail()">Envoyer par Email</button>
         <button onclick="signOutUser()">Se Déconnecter</button>
     </div>
 
-    <!-- Firebase and EmailJS Scripts -->
+    <!-- Scripts Firebase et EmailJS -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
+        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        emailjs.init('dddsB0iDVKS5WTcz8');
+        // Initialiser EmailJS
+        emailjs.init('dddsB0iDVKS5WTcz8');  // Remplacez par votre Public Key
 
-        // Manage authentication state
+        // Vérification de l'état de connexion
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // Si l'utilisateur est connecté, afficher la zone de texte
                 document.getElementById('text-container').style.display = 'block';
             } else {
+                // Sinon, rediriger vers la page de connexion
                 window.location.href = 'profile.html';
             }
         });
 
-        // Send text via EmailJS
-        function sendTextByEmail(email, message) {
+        // Fonction pour envoyer le texte par email
+        function sendTextByEmail() {
+            const userEmail = auth.currentUser.email;
+            const userText = document.getElementById('user-text').value;
+
             const templateParams = {
-                to_email: email,
-                message: message
+                user_email: userEmail,
+                user_text: userText
             };
 
-            emailjs.send('service_xxxxx', 'template_xxxxx', templateParams)
-                .then(() => {
-                    alert('Message envoyé avec succès');
+            emailjs.send('service_8lehz4x', 'template_xxgdgj3', templateParams)
+                .then((response) => {
+                    console.log('Succès de l\'envoi de l\'email:', response);
+                    alert('Texte envoyé par email !');
                 }, (error) => {
-                    alert('Échec de l\'envoi : ' + error.text);
+                    console.error('Erreur lors de l\'envoi de l\'email:', error);
+                    alert('Erreur lors de l\'envoi de l\'email : ' + error.text);
                 });
         }
 
-        // Sign out user
+        // Fonction pour se déconnecter
         function signOutUser() {
             signOut(auth).then(() => {
                 window.location.href = 'profile.html';
+            }).catch((error) => {
+                alert('Erreur lors de la déconnexion : ' + error.message);
             });
         }
+
+        // Exposer les fonctions pour les boutons
+        window.sendTextByEmail = sendTextByEmail;
+        window.signOutUser = signOutUser;
     </script>
 </body>
 </html>
