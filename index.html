@@ -131,7 +131,7 @@
     <div id="logged-in" style="display: none;">
         <div id="text-container">
             <h2>Mon Texte Personnel</h2>
-            <textarea id="user-text" placeholder="Écris ton texte ici..."></textarea>
+            <textarea id="user-text" placeholder="Envoie toi un mail..."></textarea>
             <button onclick="sendMail()">S'envoyer par Email</button>
             <button onclick="signOutUser()">Se Déconnecter</button>
         </div>
@@ -167,14 +167,6 @@
             }
         });
 
-        // Fonction pour envoyer le texte par email
-        function sendTextByEmail() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert('Vous devez être connecté pour envoyer un email.');
-                return;
-            }
-
             const userEmail = user.email;
             const userText = document.getElementById('user-text').value;
 
@@ -203,7 +195,7 @@
         }
 
         // Exposer les fonctions pour les boutons
-        window.sendTextByEmail = sendTextByEmail;
+        window.sendMail = sendMail;
         window.signOutUser = signOutUser;
     </script>
 </body>
