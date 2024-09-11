@@ -135,22 +135,8 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
         import { firebaseConfig } from "./firebase-config.js";
 
-        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
-        // Gérer l'état d'authentification
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('logged-out').style.display = 'none';
-                document.getElementById('agenda-button').style.display = 'inline-block';
-                document.getElementById('sign-out-button').style.display = 'inline-block';
-            } else {
-                document.getElementById('logged-out').style.display = 'block';
-                document.getElementById('agenda-button').style.display = 'none';
-                document.getElementById('sign-out-button').style.display = 'none';
-            }
-        });
 
         // Fonction pour ouvrir l'agenda
         function openAgenda() {
@@ -165,6 +151,19 @@
                 alert('Erreur lors de la déconnexion : ' + error.message);
             });
         }
+
+        // Gérer l'état d'authentification
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('logged-out').style.display = 'none';
+                document.getElementById('agenda-button').style.display = 'inline-block';
+                document.getElementById('sign-out-button').style.display = 'inline-block';
+            } else {
+                document.getElementById('logged-out').style.display = 'block';
+                document.getElementById('agenda-button').style.display = 'none';
+                document.getElementById('sign-out-button').style.display = 'none';
+            }
+        });
 
         // Exposer les fonctions globalement
         window.openAgenda = openAgenda;
