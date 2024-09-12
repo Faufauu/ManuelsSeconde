@@ -6,8 +6,11 @@
         body {
             margin: 0;
             padding: 0;
-            background: #f0f0f0; /* Changement de couleur de fond pour plus de contraste */
-            font-family: Arial, sans-serif; /* Police plus moderne */
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
         #header {
@@ -33,11 +36,9 @@
         }
 
         #messages {
-            position: fixed;
-            left: 0;
-            top: 50px;
-            width: 100%;
-            height: calc(100% - 100px);
+            flex: 1;
+            margin-top: 50px;
+            margin-bottom: 50px;
             background: #fff;
             overflow-y: auto;
             padding: 10px;
@@ -46,8 +47,8 @@
 
         #sendMsg {
             position: fixed;
-            left: 0;
             bottom: 0;
+            left: 0;
             width: 100%;
             height: 50px;
             background: #ddd;
@@ -105,19 +106,14 @@
             color: #000;
         }
 
-        /* Style pour le bouton de suppression */
-        .deleteBtn {
-            background: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            margin-left: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        @media (max-width: 600px) {
+            #msgBtn {
+                width: 80px;
+            }
 
-        .deleteBtn:hover {
-            background: #c82333;
+            #msgTxt {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -135,7 +131,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, remove, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
@@ -151,7 +147,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Variables
+        const messagesRef = ref(db, "messages");
         var msgTxt = document.getElementById('msgTxt');
         var sender;
 
@@ -172,21 +168,38 @@
             });
 
             msgTxt.value = "";
+            // Check and limit the number of messages after sending
+            checkMessageLimit();
         }
 
-        // Attache l'événement `click` dynamiquement
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
 
-        // TO RECEIVE MSG
-        onChildAdded(ref(db, "messages"), (data) => {
-            if (data.val().sender === sender) {
+        // TO RECEIVE MESSAGES
+        onChildAdded(messagesRef, (data) => {
+            const messageData = data.val();
+            if (messageData.sender === sender) {
                 messages.innerHTML += `<div style="justify-content: end" class="outer" id="${data.key}">
-                    <div id="inner" class="me">You: ${data.val().msg}</div></div>`;
+                    <div id="inner" class="me">You: ${messageData.msg}</div></div>`;
             } else {
                 messages.innerHTML += `<div class="outer" id="${data.key}">
-                    <div id="inner" class="notMe">${data.val().sender}: ${data.val().msg}</div></div>`;
+                    <div id="inner" class="notMe">${messageData.sender}: ${messageData.msg}</div></div>`;
             }
         });
+
+        // Check and limit messages to 50
+        function checkMessageLimit() {
+            get(messagesRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const messages = snapshot.val();
+                    const messageKeys = Object.keys(messages);
+                    if (messageKeys.length > 50) {
+                        // Remove the oldest message(s)
+                        const oldestMessageKey = messageKeys[0];
+                        remove(ref(db, "messages/" + oldestMessageKey));
+                    }
+                }
+            });
+        }
     </script>
 </body>
 
