@@ -1,117 +1,130 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
-            font-family: Arial, sans-serif;
+            font-family: 'Rowdies', sans-serif;
+            background-image: url('fondchat.jpg'); /* Ajout d'un fond d'écran */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
 
-        #header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background: #333;
-            color: #fff;
+        .container {
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            max-width: 800px;
+            height: 90%;
             display: flex;
-            align-items: center;
-            padding: 0 10px;
-            box-sizing: border-box;
-            z-index: 1000;
+            flex-direction: column;
         }
 
-        #header a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 20px;
-            font-weight: bold;
+        #header {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 36px;
         }
 
         #messages {
             flex: 1;
-            margin-top: 50px;
-            margin-bottom: 50px;
-            background: #fff;
             overflow-y: auto;
             padding: 10px;
-            box-sizing: border-box;
-        }
-
-        #sendMsg {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background: #ddd;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            box-sizing: border-box;
-        }
-
-        #msgTxt {
-            flex: 1;
-            height: 100%;
-            padding: 0 10px;
-            box-sizing: border-box;
-            border: none;
-            border-radius: 5px;
-        }
-
-        #msgBtn {
-            width: 100px;
-            height: 100%;
-            border: none;
-            border-radius: 5px;
-            background: #007bff;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
             color: #fff;
-            cursor: pointer;
-        }
-
-        #msgBtn:hover {
-            background: #0056b3;
         }
 
         .outer {
-            width: 100%;
-            margin-top: 10px;
             display: flex;
-        }
-
-        #inner {
-            padding: 10px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            max-width: 70%;
-            word-wrap: break-word;
+            margin-bottom: 10px;
         }
 
         .me {
             background: #007bff;
             color: #fff;
             margin-left: auto;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
         }
 
         .notMe {
             background: #f1f1f1;
             color: #000;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        #sendMsg {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        #msgTxt {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        #msgBtn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        #msgBtn:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #bbb;
         }
 
         @media (max-width: 600px) {
-            #msgBtn {
-                width: 80px;
+            h1 {
+                font-size: 28px;
             }
 
-            #msgTxt {
+            #msgBtn {
+                padding: 10px;
                 font-size: 14px;
             }
         }
@@ -119,87 +132,61 @@
 </head>
 
 <body>
-    <div id="header">
-        <a href="index.html">&#10006;</a> <!-- Icône de croix pour la redirection -->
-    </div>
-    <div id="messages"></div>
+    <div class="container">
+        <div id="header">
+            <a href="index.html">&#10006; Retour</a> <!-- Lien pour revenir au menu -->
+            <h1>Chat en Ligne</h1>
+        </div>
 
-    <div id="sendMsg">
-        <input type="text" id="msgTxt" placeholder="Message...">
-        <input type="submit" id="msgBtn" value="Send">
+        <div id="messages"></div>
+
+        <div id="sendMsg">
+            <input type="text" id="msgTxt" placeholder="Écrire un message...">
+            <input type="submit" id="msgBtn" value="Envoyer">
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, remove, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-            authDomain: "manuelsseconde.firebaseapp.com",
-            databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "manuelsseconde",
-            storageBucket: "manuelsseconde.appspot.com",
-            messagingSenderId: "369461165606",
-            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
-            measurementId: "G-W508347RVD"
+            apiKey: "API_KEY",
+            authDomain: "PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "PROJECT_ID",
+            storageBucket: "PROJECT_ID.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const messagesRef = ref(db, "messages");
         var msgTxt = document.getElementById('msgTxt');
-        var sender;
+        var sender = sessionStorage.getItem('sender') || prompt('Quel est ton nom ?');
+        sessionStorage.setItem('sender', sender);
 
-        if (sessionStorage.getItem('sender')) {
-            sender = sessionStorage.getItem('sender');
-        } else {
-            sender = prompt('Quel est ton nom ?');
-            sessionStorage.setItem('sender', sender);
-        }
-
-        // TO SEND MESSAGES
+        // Envoyer un message
         function sendMsg() {
             var msg = msgTxt.value;
             var timestamp = new Date().getTime();
-            set(ref(db, "messages/" + timestamp), {
-                msg: msg,
-                sender: sender
-            });
-
-            msgTxt.value = "";
-            // Check and limit the number of messages after sending
-            checkMessageLimit();
+            set(ref(db, "messages/" + timestamp), { msg: msg, sender: sender });
+            msgTxt.value = ""; // Effacer le champ après l'envoi
         }
 
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
 
-        // TO RECEIVE MESSAGES
-        onChildAdded(messagesRef, (data) => {
-            const messageData = data.val();
-            if (messageData.sender === sender) {
-                messages.innerHTML += `<div style="justify-content: end" class="outer" id="${data.key}">
-                    <div id="inner" class="me">You: ${messageData.msg}</div></div>`;
-            } else {
-                messages.innerHTML += `<div class="outer" id="${data.key}">
-                    <div id="inner" class="notMe">${messageData.sender}: ${messageData.msg}</div></div>`;
-            }
+        // Recevoir les messages
+        onChildAdded(ref(db, "messages"), (data) => {
+            const message = data.val();
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('outer');
+            messageElement.innerHTML = message.sender === sender ?
+                `<div class="me">${message.msg}</div>` :
+                `<div class="notMe">${message.sender}: ${message.msg}</div>`;
+            document.getElementById('messages').appendChild(messageElement);
         });
-
-        // Check and limit messages to 50
-        function checkMessageLimit() {
-            get(messagesRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const messages = snapshot.val();
-                    const messageKeys = Object.keys(messages);
-                    if (messageKeys.length > 50) {
-                        // Remove the oldest message(s)
-                        const oldestMessageKey = messageKeys[0];
-                        remove(ref(db, "messages/" + oldestMessageKey));
-                    }
-                }
-            });
-        }
     </script>
 </body>
 
