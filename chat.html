@@ -6,11 +6,12 @@
     <title>Chat en Ligne</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
     <style>
+        /* Styles identiques */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Rowdies', sans-serif;
-            background-image: url('fondécran.jpg'); /* Fond d'écran */
+            background-image: url('fondécran.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -22,11 +23,11 @@
         }
 
         .container {
-            width: 80%; /* Plus large pour les écrans PC */
-            max-width: 1200px; /* Limite maximale pour les grands écrans */
-            height: 90%; /* Plus grand conteneur */
+            width: 80%;
+            max-width: 1200px;
+            height: 90%;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.8); /* Transparence plus légère */
+            background: rgba(0, 0, 0, 0.8);
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -62,7 +63,6 @@
             border-radius: 10px;
             margin-bottom: 15px;
             color: #fff;
-            max-height: 600px; /* Limite de hauteur pour le défilement */
         }
 
         .outer {
@@ -154,7 +154,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "API_KEY",
@@ -173,9 +173,10 @@
         var sender = sessionStorage.getItem('sender') || prompt('Quel est ton nom ?');
         sessionStorage.setItem('sender', sender);
 
-        // Envoyer un message
+        // Fonction pour envoyer des messages
         function sendMsg() {
             var msg = msgTxt.value;
+            if (msg === "") return; // Ne pas envoyer de messages vides
             var timestamp = new Date().getTime();
             set(ref(db, "messages/" + timestamp), { msg: msg, sender: sender });
             msgTxt.value = ""; // Efface le champ après envoi
@@ -183,7 +184,9 @@
 
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
 
-        // Recevoir les messages
+        // Fonction pour recevoir les messages et les afficher
+        const messagesContainer = document.getElementById('messages');
+
         onChildAdded(ref(db, "messages"), (data) => {
             const message = data.val();
             const messageElement = document.createElement('div');
@@ -191,7 +194,18 @@
             messageElement.innerHTML = message.sender === sender ?
                 `<div class="me">${message.msg}</div>` :
                 `<div class="notMe">${message.sender}: ${message.msg}</div>`;
-            document.getElementById('messages').appendChild(messageElement);
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll automatique vers le bas
+        });
+
+        // Supprimer les messages au-delà de 50 pour éviter l'encombrement
+        onValue(ref(db, "messages"), (snapshot) => {
+            const messages = snapshot.val();
+            const keys = Object.keys(messages || {});
+            if (keys.length > 50) {
+                const oldestKey = keys[0]; // Récupère la clé du plus ancien message
+                set(ref(db, "messages/" + oldestKey), null); // Supprime le plus ancien message
+            }
         });
     </script>
 </body>
