@@ -26,18 +26,18 @@
         }
 
         .box {
-            width: 400px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
+            width: 450px; /* Agrandi la boîte */
+            padding: 30px; /* Augmente l'espacement interne */
+            background: rgba(0, 0, 0, 0.85); /* Légèrement plus sombre */
+            border-radius: 15px; /* Plus d'arrondi */
             text-align: center;
         }
 
         .box input,
         .box button {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 12px; /* Légèrement plus grand */
+            margin: 12px 0; /* Plus d'espacement entre les éléments */
             border: none;
             border-radius: 5px;
         }
@@ -58,11 +58,11 @@
 
         #messagesBox {
             display: none;
-            width: 400px;
+            width: 450px;
             height: 600px;
-            padding: 10px;
+            padding: 20px; /* Plus d'espace autour des messages */
             background: rgba(0, 0, 0, 0.9);
-            border-radius: 10px;
+            border-radius: 15px;
             color: white;
             overflow-y: auto;
             position: relative;
@@ -125,14 +125,14 @@
         import { getDatabase, ref, set, get, remove, query, orderByKey } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "API_KEY_HERE",
-            authDomain: "PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://PROJECT_ID.firebaseio.com",
-            projectId: "PROJECT_ID",
-            storageBucket: "PROJECT_ID.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
-        };
+              apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
+              authDomain: "manuelsseconde.firebaseapp.com",
+              databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
+              projectId: "manuelsseconde",
+              storageBucket: "manuelsseconde.appspot.com",
+              messagingSenderId: "369461165606",
+              appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
+          };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -142,7 +142,7 @@
         const twelveHours = 12 * 60 * 60 * 1000; // 12 heures en millisecondes
 
         // Créer un salon
-        function createRoom() {
+        window.createRoom = function () {
             roomName = document.getElementById("roomName").value;
             roomPassword = document.getElementById("roomPassword").value;
 
@@ -158,10 +158,10 @@
             } else {
                 alert("Veuillez entrer un nom de salon et un mot de passe.");
             }
-        }
+        };
 
         // Rejoindre un salon
-        function enterRoom() {
+        window.enterRoom = function () {
             roomName = document.getElementById("roomName").value;
             roomPassword = document.getElementById("enterPassword").value;
             pseudo = document.getElementById("enterName").value;
@@ -175,7 +175,7 @@
                     alert("Mot de passe incorrect ou salon inexistant.");
                 }
             });
-        }
+        };
 
         // Charger les messages
         function loadMessages() {
@@ -190,7 +190,7 @@
         }
 
         // Envoyer un message
-        function sendMsg() {
+        window.sendMsg = function () {
             const msgTxt = document.getElementById("msgTxt").value;
             const timestamp = new Date().getTime();
             set(ref(db, `messages/${roomName}/${timestamp}`), {
@@ -199,7 +199,7 @@
                 timestamp: timestamp
             });
             document.getElementById("msgTxt").value = "";
-        }
+        };
 
         // Suppression automatique après 12 heures
         function autoDeleteRooms() {
