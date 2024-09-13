@@ -206,14 +206,23 @@
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
 
         // Fonction pour recevoir les messages
+        const messagesContainer = document.getElementById('messages');
+
         onChildAdded(ref(db, "messages"), (data) => {
+            const newMessage = document.createElement('div');
+            newMessage.classList.add('outer');
+            newMessage.id = data.key;
+
             if (data.val().sender === sender) {
-                messages.innerHTML += `<div class="outer" id="${data.key}">
-                    <div id="inner" class="me">Moi : ${data.val().msg}</div></div>`;
+                newMessage.innerHTML = `<div id="inner" class="me">Moi : ${data.val().msg}</div>`;
             } else {
-                messages.innerHTML += `<div class="outer" id="${data.key}">
-                    <div id="inner" class="notMe">${data.val().sender} : ${data.val().msg}</div></div>`;
+                newMessage.innerHTML = `<div id="inner" class="notMe">${data.val().sender} : ${data.val().msg}</div>`;
             }
+
+            messagesContainer.appendChild(newMessage);
+
+            // Scroll automatiquement vers le bas
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
     </script>
 </body>
