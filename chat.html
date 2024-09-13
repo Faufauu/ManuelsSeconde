@@ -18,205 +18,203 @@
             color: white;
         }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .box {
-            width: 450px; /* Agrandi la boîte */
-            padding: 30px; /* Augmente l'espacement interne */
-            background: rgba(0, 0, 0, 0.85); /* Légèrement plus sombre */
-            border-radius: 15px; /* Plus d'arrondi */
-            text-align: center;
-        }
-
-        .box input,
-        .box button {
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px; /* Légèrement plus grand */
-            margin: 12px 0; /* Plus d'espacement entre les éléments */
-            border: none;
-            border-radius: 5px;
-        }
-
-        .box input {
-            font-size: 16px;
-        }
-
-        .box button {
-            background-color: #4CAF50;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            z-index: 1000;
         }
 
-        .box button:hover {
-            background-color: #45a049;
-        }
-
-        #messagesBox {
-            display: none;
-            width: 450px;
-            height: 600px;
-            padding: 20px; /* Plus d'espace autour des messages */
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 15px;
+        #header a {
             color: white;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        #header a:hover {
+            color: #bbb;
+        }
+
+        #messages {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 100%;
+            height: calc(100% - 120px);
+            background: rgba(255, 255, 255, 0.1);
             overflow-y: auto;
-            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+            color: white;
         }
 
         #sendMsg {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
-            position: absolute;
-            bottom: 10px;
-            width: 90%;
+            align-items: center;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
 
         #msgTxt {
             flex: 1;
-            padding: 10px;
-            border-radius: 5px;
+            height: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
             border: none;
+            border-radius: 5px;
             font-size: 16px;
         }
 
         #msgBtn {
             width: 100px;
-            margin-left: 10px;
-            background-color: #007bff;
-            color: white;
+            height: 100%;
             border: none;
             border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            margin-left: 10px;
         }
 
         #msgBtn:hover {
-            background-color: #0056b3;
+            background-color: #45a049;
+        }
+
+        .outer {
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        #inner {
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .me {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            border-radius: 10px;
+        }
+
+        .notMe {
+            background: #f1f1f1;
+            color: black;
+            border-radius: 10px;
+        }
+
+        /* Media Queries pour les petits écrans */
+        @media (max-width: 768px) {
+            #header {
+                height: 50px;
+            }
+
+            #sendMsg {
+                height: 50px;
+            }
+
+            #msgTxt {
+                font-size: 14px;
+            }
+
+            #msgBtn {
+                width: 80px;
+                font-size: 14px;
+            }
+
+            .outer {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="box" id="lobbyBox">
-            <h2>Créer ou Rejoindre un Salon</h2>
-            <input type="text" id="roomName" placeholder="Nom du salon">
-            <input type="password" id="roomPassword" placeholder="Mot de passe du salon">
-            <button onclick="createRoom()">Créer Salon</button>
-            <input type="text" id="enterName" placeholder="Pseudo">
-            <input type="password" id="enterPassword" placeholder="Mot de passe du salon">
-            <button onclick="enterRoom()">Rejoindre Salon</button>
-        </div>
+    <div id="header">
+        <a href="index.html">&#10006; Retour</a> <!-- Icône de croix pour la redirection -->
+    </div>
 
-        <div id="messagesBox">
-            <div id="messages"></div>
-            <div id="sendMsg">
-                <input type="text" id="msgTxt" placeholder="Message...">
-                <button id="msgBtn" onclick="sendMsg()">Envoyer</button>
-            </div>
-        </div>
+    <div id="messages"></div>
+
+    <div id="sendMsg">
+        <input type="text" id="msgTxt" placeholder="Message...">
+        <input type="submit" id="msgBtn" value="Envoyer">
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, get, remove, query, orderByKey } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
-              apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-              authDomain: "manuelsseconde.firebaseapp.com",
-              databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
-              projectId: "manuelsseconde",
-              storageBucket: "manuelsseconde.appspot.com",
-              messagingSenderId: "369461165606",
-              appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
-          };
+            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
+            authDomain: "manuelsseconde.firebaseapp.com",
+            databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "manuelsseconde",
+            storageBucket: "manuelsseconde.appspot.com",
+            messagingSenderId: "369461165606",
+            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
+            measurementId: "G-W508347RVD"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Variables globales
-        var roomName, roomPassword, pseudo;
-        const twelveHours = 12 * 60 * 60 * 1000; // 12 heures en millisecondes
+        // Variables
+        var msgTxt = document.getElementById('msgTxt');
+        var sender;
 
-        // Créer un salon
-        window.createRoom = function () {
-            roomName = document.getElementById("roomName").value;
-            roomPassword = document.getElementById("roomPassword").value;
+        if (sessionStorage.getItem('sender')) {
+            sender = sessionStorage.getItem('sender');
+        } else {
+            sender = prompt('Quel est ton nom ?');
+            sessionStorage.setItem('sender', sender);
+        }
 
-            if (roomName && roomPassword) {
-                const timestamp = new Date().getTime();
-                set(ref(db, `rooms/${roomName}`), {
-                    password: roomPassword,
-                    timestamp: timestamp
-                }).then(() => {
-                    sessionStorage.setItem("roomName", roomName);
-                    loadMessages();
-                });
+        // Fonction pour envoyer des messages
+        function sendMsg() {
+            var msg = msgTxt.value;
+            var timestamp = new Date().getTime();
+            set(ref(db, "messages/" + timestamp), {
+                msg: msg,
+                sender: sender
+            });
+
+            msgTxt.value = "";
+        }
+
+        // Attacher l'événement click pour envoyer les messages
+        document.getElementById('msgBtn').addEventListener('click', sendMsg);
+
+        // Fonction pour recevoir les messages
+        onChildAdded(ref(db, "messages"), (data) => {
+            if (data.val().sender === sender) {
+                messages.innerHTML += `<div class="outer" id="${data.key}">
+                    <div id="inner" class="me">Moi : ${data.val().msg}</div></div>`;
             } else {
-                alert("Veuillez entrer un nom de salon et un mot de passe.");
+                messages.innerHTML += `<div class="outer" id="${data.key}">
+                    <div id="inner" class="notMe">${data.val().sender} : ${data.val().msg}</div></div>`;
             }
-        };
-
-        // Rejoindre un salon
-        window.enterRoom = function () {
-            roomName = document.getElementById("roomName").value;
-            roomPassword = document.getElementById("enterPassword").value;
-            pseudo = document.getElementById("enterName").value;
-
-            get(ref(db, `rooms/${roomName}`)).then((snapshot) => {
-                if (snapshot.exists() && snapshot.val().password === roomPassword) {
-                    sessionStorage.setItem("roomName", roomName);
-                    sessionStorage.setItem("pseudo", pseudo);
-                    loadMessages();
-                } else {
-                    alert("Mot de passe incorrect ou salon inexistant.");
-                }
-            });
-        };
-
-        // Charger les messages
-        function loadMessages() {
-            document.getElementById("lobbyBox").style.display = "none";
-            document.getElementById("messagesBox").style.display = "block";
-            onChildAdded(ref(db, `messages/${roomName}`), (data) => {
-                const message = data.val();
-                const msgElement = document.createElement("div");
-                msgElement.textContent = `${message.sender}: ${message.msg}`;
-                document.getElementById("messages").appendChild(msgElement);
-            });
-        }
-
-        // Envoyer un message
-        window.sendMsg = function () {
-            const msgTxt = document.getElementById("msgTxt").value;
-            const timestamp = new Date().getTime();
-            set(ref(db, `messages/${roomName}/${timestamp}`), {
-                sender: sessionStorage.getItem("pseudo"),
-                msg: msgTxt,
-                timestamp: timestamp
-            });
-            document.getElementById("msgTxt").value = "";
-        };
-
-        // Suppression automatique après 12 heures
-        function autoDeleteRooms() {
-            const currentTime = new Date().getTime();
-            get(query(ref(db, "rooms"), orderByKey())).then((snapshot) => {
-                snapshot.forEach((roomSnapshot) => {
-                    const roomData = roomSnapshot.val();
-                    if (currentTime - roomData.timestamp >= twelveHours) {
-                        remove(ref(db, `rooms/${roomSnapshot.key}`));
-                        remove(ref(db, `messages/${roomSnapshot.key}`));
-                    }
-                });
-            });
-        }
-
-        // Lancer la suppression automatique toutes les heures
-        setInterval(autoDeleteRooms, 60 * 60 * 1000);
+        });
     </script>
 </body>
 
