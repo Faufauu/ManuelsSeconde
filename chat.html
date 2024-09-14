@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Amélioré</title>
+    <title>Tchat Seconde</title>
     <style>
         /* Styles globaux */
         body, html {
@@ -123,7 +123,7 @@
         <!-- Croix de fermeture -->
         <a id="closeBtn" href="index.html">&times;</a>
         
-        <h1>Chat</h1>
+        <h1>Chat Local</h1>
         <div id="messages"></div>
 
         <div style="display: flex;">
@@ -156,7 +156,7 @@
         // Variables
         const msgTxt = document.getElementById('msgTxt');
         const messagesContainer = document.getElementById('messages');
-        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton nom ?');
+        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
         if (sessionStorage.getItem('sender') === null) {
             sessionStorage.setItem('sender', sender);
         }
