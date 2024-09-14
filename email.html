@@ -79,6 +79,24 @@
             overflow-y: auto;
             margin-top: 20px;
         }
+        #messageList div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        #messageList button {
+            margin-left: 10px;
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #messageList button:hover {
+            background-color: #c62828;
+        }
     </style>
 </head>
 <body>
@@ -128,13 +146,40 @@
                 const messageArray = JSON.parse(messages);
 
                 // Afficher les messages dans la zone dédiée
-                messageArray.forEach(msg => {
+                messageArray.forEach((msg, index) => {
                     const msgDiv = document.createElement('div');
                     msgDiv.textContent = msg;
+
+                    // Ajouter un bouton pour supprimer le message
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Supprimer';
+                    deleteButton.onclick = () => deleteMessage(index);
+
+                    msgDiv.appendChild(deleteButton);
                     messageList.appendChild(msgDiv);
                 });
             } else {
                 messageList.innerHTML = '<p>Aucun message pour ce pseudo.</p>';
+            }
+        }
+
+        // Fonction pour supprimer un message
+        function deleteMessage(index) {
+            const pseudo = document.getElementById('pseudo').value;
+
+            // Récupérer les messages existants
+            let messages = localStorage.getItem(pseudo);
+            if (messages) {
+                messages = JSON.parse(messages);
+
+                // Supprimer le message à l'index donné
+                messages.splice(index, 1);
+
+                // Mettre à jour localStorage
+                localStorage.setItem(pseudo, JSON.stringify(messages));
+
+                // Recharger les messages
+                loadMessages();
             }
         }
 
@@ -159,6 +204,11 @@
             // Ajouter le nouveau message
             messages.push(message);
 
+            // Limiter à 10 messages en supprimant le plus ancien
+            if (messages.length > 10) {
+                messages.shift();
+            }
+
             // Sauvegarder dans localStorage
             localStorage.setItem(pseudo, JSON.stringify(messages));
 
@@ -169,7 +219,6 @@
 
         // Charger les messages automatiquement lorsque le pseudo change
         document.getElementById('pseudo').addEventListener('input', loadMessages);
-
     </script>
 </body>
 </html>
