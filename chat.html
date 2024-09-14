@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages Seconde</title>
+    <title>Chat Amélioré</title>
     <style>
         /* Styles globaux */
         body, html {
@@ -28,6 +28,22 @@
             display: flex;
             flex-direction: column;
             height: 80%;
+            position: relative;
+        }
+
+        /* Croix de fermeture */
+        #closeBtn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #closeBtn:hover {
+            color: #ff0000;
         }
 
         h1 {
@@ -104,11 +120,14 @@
 <body>
 
     <div id="chatContainer">
+        <!-- Croix de fermeture -->
+        <a id="closeBtn" href="index.html">&times;</a>
+        
         <h1>Chat</h1>
         <div id="messages"></div>
 
         <div style="display: flex;">
-            <input type="text" id="msgTxt" placeholder="...">
+            <input type="text" id="msgTxt" placeholder="Tape ton message...">
             <button id="msgBtn">Envoyer</button>
         </div>
     </div>
