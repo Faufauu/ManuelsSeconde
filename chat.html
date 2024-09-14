@@ -156,29 +156,22 @@
         // Variables
         const msgTxt = document.getElementById('msgTxt');
         const messagesContainer = document.getElementById('messages');
-        let sender = '';
-
-        // Demander le nom de l'utilisateur s'il n'est pas déjà stocké
-        if (sessionStorage.getItem('sender')) {
-            sender = sessionStorage.getItem('sender');
-        } else {
-            sender = prompt('Quel est ton nom ?');
+        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton nom ?');
+        if (sessionStorage.getItem('sender') === null) {
             sessionStorage.setItem('sender', sender);
         }
 
         // Fonction pour envoyer un message
         function sendMsg() {
-            const msg = msgTxt.value;
-            const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
-
-            // Envoi du message à Firebase
-            set(ref(db, "messages/" + timestamp), {
-                msg: msg,
-                sender: sender
-            });
-
-            // Effacer le champ de texte après l'envoi
-            msgTxt.value = "";
+            const msg = msgTxt.value.trim();
+            if (msg) {
+                const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
+                set(ref(db, `messages/${timestamp}`), {
+                    msg: msg,
+                    sender: sender
+                });
+                msgTxt.value = "";
+            }
         }
 
         // Attacher l'événement pour envoyer un message lorsque le bouton est cliqué
@@ -194,27 +187,19 @@
         // Fonction pour afficher les messages reçus
         onChildAdded(ref(db, "messages"), (data) => {
             const messageData = data.val();
-
-            // Créer un élément pour afficher le message
             const newMessage = document.createElement('div');
-            newMessage.classList.add('message');
-
-            // Si l'utilisateur est l'expéditeur, aligner à droite
-            if (messageData.sender === sender) {
-                newMessage.classList.add('sent');
-            } else {
-                newMessage.classList.add('received');
-            }
-
+            newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
             newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
-
-            // Ajouter le message à l'écran
             messagesContainer.appendChild(newMessage);
+
+            // Limiter le nombre de messages à 50
+            if (messagesContainer.childElementCount > 50) {
+                messagesContainer.removeChild(messagesContainer.firstChild);
+            }
 
             // Faire défiler vers le bas automatiquement
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
-
     </script>
 
 </body>
