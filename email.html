@@ -52,8 +52,6 @@
         button {
             padding: 10px 20px;
             font-size: 1.1em;
-            background-color: #f04;
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -61,8 +59,24 @@
             margin: 10px;
         }
 
-        button:hover {
-            background-color: #c03;
+        /* Bouton Enregistrer en vert */
+        button[onclick="saveMessage()"] {
+            background-color: #28a745; /* Vert */
+            color: white;
+        }
+
+        button[onclick="saveMessage()"]:hover {
+            background-color: #218838; /* Vert plus foncé au survol */
+        }
+
+        /* Bouton Retour Menu en bleu */
+        #return-menu-button {
+            background-color: #007bff; /* Bleu */
+            color: white;
+        }
+
+        #return-menu-button:hover {
+            background-color: #0056b3; /* Bleu plus foncé au survol */
         }
 
         #messages h3 {
@@ -99,21 +113,21 @@
 
         <!-- Entrée pour le pseudo -->
         <div class="form-group">
-            <h5 for="pseudo">Pseudo</h5>
+            <h5 for="pseudo">Pseudo / Mot de passe</h5>
             <input type="text" class="form-control" id="pseudo" placeholder="Entre ton pseudo...">
         </div>
 
         <!-- Entrée pour le contenu -->
         <div class="form-group">
-            <h5 for="message">Message</h5>
-            <textarea class="form-control" id="message" rows="3" placeholder="Contenu..."></textarea>
+            <h5 for="message">Contenu</h5>
+            <textarea class="form-control" id="message" rows="3" placeholder="Devoir en ..."></textarea>
         </div>
 
         <button onclick="saveMessage()">Enregistrer</button>
 
         <!-- Affichage des messages -->
         <div id="messages">
-            <h3>Messages</h3>
+            <h3>Devoirs</h3>
             <div id="messageList"></div>
         </div>
 
