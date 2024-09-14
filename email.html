@@ -69,38 +69,107 @@
         #return-menu-button:hover {
             background-color: #0b79d0;
         }
+
+        #messages {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Agenda Numérique</h1>
+
+        <!-- Entrée pour le pseudo -->
         <div class="form-group">
-            <h5 for="name">Matière</h5>
-            <input type="text" class="form-control" id="name" placeholder="J'ai un devoir en ...">
+            <h5 for="pseudo">Pseudo</h5>
+            <input type="text" class="form-control" id="pseudo" placeholder="Entre ton pseudo...">
         </div>
+
+        <!-- Entrée pour le contenu -->
         <div class="form-group">
-            <h5 for="email">Email</h5>
-            <input type="email" class="form-control" id="email" placeholder="Mon adresse email ...">
+            <h5 for="message">Message</h5>
+            <textarea class="form-control" id="message" rows="3" placeholder="Contenu..."></textarea>
         </div>
-        <div class="form-group">
-            <h5 for="message">Contenu</h5>
-            <textarea class="form-control" id="message" rows="3
-            <textarea class="form-control" id="message" rows="3" placeholder="Contenu du devoir ..."></textarea>
+
+        <button onclick="saveMessage()">Enregistrer</button>
+
+        <!-- Affichage des messages -->
+        <div id="messages">
+            <h3>Messages</h3>
+            <div id="messageList"></div>
         </div>
-        <button onclick="sendMail()">Envoyer</button>
+
         <button id="return-menu-button" onclick="goToIndex()">Retour Menu</button>
     </div>
 
-    <script src="email2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function () {
-            emailjs.init("dddsB0iDVKS5WTcz8");
-        })();
-
+    <script>
+        // Fonction pour rediriger vers index.html
         function goToIndex() {
             window.location.href = 'index.html';
         }
+
+        // Fonction pour charger les messages du pseudo entré
+        function loadMessages() {
+            const pseudo = document.getElementById('pseudo').value;
+            const messageList = document.getElementById('messageList');
+
+            // Vider la zone de message
+            messageList.innerHTML = '';
+
+            // Récupérer les messages du localStorage pour ce pseudo
+            const messages = localStorage.getItem(pseudo);
+            if (messages) {
+                const messageArray = JSON.parse(messages);
+
+                // Afficher les messages dans la zone dédiée
+                messageArray.forEach(msg => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.textContent = msg;
+                    messageList.appendChild(msgDiv);
+                });
+            } else {
+                messageList.innerHTML = '<p>Aucun message pour ce pseudo.</p>';
+            }
+        }
+
+        // Fonction pour sauvegarder un message
+        function saveMessage() {
+            const pseudo = document.getElementById('pseudo').value;
+            const message = document.getElementById('message').value;
+
+            if (!pseudo || !message) {
+                alert("Veuillez entrer un pseudo et un message.");
+                return;
+            }
+
+            // Récupérer les messages existants pour ce pseudo
+            let messages = localStorage.getItem(pseudo);
+            if (messages) {
+                messages = JSON.parse(messages);
+            } else {
+                messages = [];
+            }
+
+            // Ajouter le nouveau message
+            messages.push(message);
+
+            // Sauvegarder dans localStorage
+            localStorage.setItem(pseudo, JSON.stringify(messages));
+
+            // Vider le champ de texte et recharger les messages
+            document.getElementById('message').value = '';
+            loadMessages();
+        }
+
+        // Charger les messages automatiquement lorsque le pseudo change
+        document.getElementById('pseudo').addEventListener('input', loadMessages);
+
     </script>
 </body>
 </html>
