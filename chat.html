@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Amélioré</title>
+    <title>Messages Seconde</title>
     <style>
         /* Styles globaux */
         body, html {
@@ -108,7 +108,7 @@
         <div id="messages"></div>
 
         <div style="display: flex;">
-            <input type="text" id="msgTxt" placeholder="Tape ton message...">
+            <input type="text" id="msgTxt" placeholder="...">
             <button id="msgBtn">Envoyer</button>
         </div>
     </div>
@@ -164,6 +164,13 @@
 
         // Attacher l'événement pour envoyer un message lorsque le bouton est cliqué
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
+
+        // Fonction pour envoyer un message avec "Entrer"
+        msgTxt.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendMsg();
+            }
+        });
 
         // Fonction pour afficher les messages reçus
         onChildAdded(ref(db, "messages"), (data) => {
