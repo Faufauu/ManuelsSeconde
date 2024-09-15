@@ -24,7 +24,7 @@
             width: 100%;
             max-width: 600px;
             margin: 50px auto;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(255, 255, 255, 0.2);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -58,7 +58,7 @@
             margin-bottom: 15px;
             padding: 10px;
             border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .message {
@@ -177,9 +177,9 @@
         function loadMessages() {
             if (!currentUserId) return;
 
-            const messageList = document.getElementById('messages');
             const messagesRef = ref(db, 'messages/' + currentUserId);
-
+            const messageList = document.getElementById('messages');
+            
             messageList.innerHTML = '';
 
             onChildAdded(messagesRef, (snapshot) => {
@@ -191,17 +191,7 @@
                     
                     messageList.appendChild(msgDiv);
 
-                    if (messageList.childElementCount > 50) {
-                        const oldestMessage = messageList.firstChild;
-                        if (oldestMessage) {
-                            const timestampToRemove = oldestMessage.getAttribute('data-timestamp');
-                            if (timestampToRemove) {
-                                remove(ref(db, `messages/${currentUserId}/${timestampToRemove}`));
-                            }
-                            messageList.removeChild(oldestMessage);
-                        }
-                    }
-                    
+                    // Remove oldest message if there are more than 50 messages
                     messageList.scrollTop = messageList.scrollHeight;
                 }
             });
@@ -211,15 +201,33 @@
             const msgTxt = document.getElementById('msgTxt');
             const msg = msgTxt.value.trim();
             if (msg) {
-                const timestamp = Date.now(); 
+                const timestamp = Date.now();
                 push(ref(db, `messages/${currentUserId}`), {
                     content: msg,
                     sender: currentUserId,
                     timestamp: timestamp
                 }).then(() => {
                     msgTxt.value = "";
+                    enforceMessageLimit();
                 });
             }
+        }
+
+        function enforceMessageLimit() {
+            if (!currentUserId) return;
+
+            const messagesRef = ref(db, `messages/${currentUserId}`);
+            onChildAdded(messagesRef, (snapshot) => {
+                const messages = snapshot.val();
+                const messagesArray = Object.entries(messages)
+                    .map(([key, msg]) => ({ id: key, ...msg }))
+                    .sort((a, b) => a.timestamp - b.timestamp);
+
+                if (messagesArray.length > 50) {
+                    const oldestMessage = messagesArray[0];
+                    remove(ref(db, `messages/${currentUserId}/${oldestMessage.id}`));
+                }
+            });
         }
 
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
