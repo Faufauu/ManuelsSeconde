@@ -44,7 +44,7 @@
             border-radius: 5px;
         }
 
-        #pseudo, #message {
+        #message {
             background-color: #333;
             color: #fff;
         }
@@ -111,12 +111,6 @@
     <div class="container">
         <h1>Agenda Numérique</h1>
 
-        <!-- Entrée pour le pseudo -->
-        <div class="form-group">
-            <h5 for="pseudo">Pseudo</h5>
-            <input type="text" class="form-control" id="pseudo" placeholder="Entre ton pseudo...">
-        </div>
-
         <!-- Entrée pour le contenu -->
         <div class="form-group">
             <h5 for="message">Contenu</h5>
@@ -160,52 +154,45 @@
             window.location.href = 'index.html';
         }
 
-        // Fonction pour charger les messages du pseudo entré
+        // Fonction pour charger les messages de l'utilisateur connecté
         function loadMessages() {
-            const pseudo = document.getElementById('pseudo').value;
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+
+            const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
             const messageList = document.getElementById('messageList');
 
             // Vider la zone de message
             messageList.innerHTML = '';
 
-            if (!pseudo) return;
-
-            // Récupérer les messages depuis Firebase pour ce pseudo
-            const messagesRef = db.ref('messages/' + pseudo);
+            // Récupérer les messages depuis Firebase pour l'utilisateur connecté
+            const messagesRef = db.ref('messages/' + email);
             messagesRef.once('value', (snapshot) => {
                 const messages = snapshot.val();
 
                 if (messages) {
-                    // Convertir les messages en tableau pour tri
-                    const messagesArray = Object.entries(messages)
-                        .map(([key, msg]) => ({ id: key, ...msg }))
-                        .sort((a, b) => a.timestamp - b.timestamp);
-
-                    messagesArray.slice(0, 10).forEach(({ id, content }) => {
-                        // Vérifier si le contenu est défini
-                        const msgContent = content || "Message sans contenu";
-
+                    Object.entries(messages).forEach(([key, msg]) => {
                         const msgDiv = document.createElement('div');
-                        msgDiv.textContent = msgContent;
+                        msgDiv.textContent = msg.content;
 
                         // Ajouter un bouton pour supprimer le message
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = 'Supprimer';
-                        deleteButton.onclick = () => deleteMessage(pseudo, id);
+                        deleteButton.onclick = () => deleteMessage(email, key);
 
                         msgDiv.appendChild(deleteButton);
                         messageList.appendChild(msgDiv);
                     });
                 } else {
-                    messageList.innerHTML = '<p>Aucun message pour ce pseudo.</p>';
+                    messageList.innerHTML = '<p>Aucun message pour cet utilisateur.</p>';
                 }
             });
         }
 
         // Fonction pour supprimer un message
-        function deleteMessage(pseudo, messageId) {
+        function deleteMessage(email, messageId) {
             // Supprimer le message de Firebase
-            db.ref('messages/' + pseudo + '/' + messageId).remove();
+            db.ref('messages/' + email + '/' + messageId).remove();
 
             // Recharger les messages
             loadMessages();
@@ -213,42 +200,37 @@
 
         // Fonction pour sauvegarder un message
         function saveMessage() {
-            const pseudo = document.getElementById('pseudo').value;
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert("Vous devez être connecté pour enregistrer un message.");
+                return;
+            }
+
+            const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
             const message = document.getElementById('message').value;
 
-            if (!pseudo || !message) {
-                alert("Veuillez entrer un pseudo et un message.");
+            if (!message) {
+                alert("Veuillez entrer un message.");
                 return;
             }
 
             // Sauvegarder le message dans Firebase
-            const messagesRef = db.ref('messages/' + pseudo);
-
-            // Limiter le nombre de messages à 10
-            messagesRef.once('value', (snapshot) => {
-                const messages = snapshot.val();
-                const messageCount = messages ? Object.keys(messages).length : 0;
-
-                if (messageCount >= 10) {
-                    // Supprimer le plus ancien message
-                    const oldestMessageId = Object.keys(messages)[0];
-                    db.ref('messages/' + pseudo + '/' + oldestMessageId).remove();
-                }
-
-                // Ajouter le nouveau message
-                messagesRef.push({
-                    content: message,
-                    timestamp: Date.now()
-                });
-
-                // Vider le champ de texte et recharger les messages
-                document.getElementById('message').value = '';
-                loadMessages();
+            const messagesRef = db.ref('messages/' + email);
+            messagesRef.push({
+                content: message
             });
+
+            // Vider le champ de texte et recharger les messages
+            document.getElementById('message').value = '';
+            loadMessages();
         }
 
-        // Charger les messages automatiquement lorsque le pseudo change
-        document.getElementById('pseudo').addEventListener('input', loadMessages);
+        // Charger les messages automatiquement lorsque l'utilisateur se connecte
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                loadMessages();
+            }
+        });
     </script>
 </body>
 </html>
