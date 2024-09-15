@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat en Ligne</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Chat</title>
     <style>
-        body {
-            font-family: 'Rowdies', sans-serif;
-            background: url('fondécran.jpg') no-repeat center center fixed;
-            background-size: cover;
+        body, html {
             margin: 0;
             padding: 0;
-            color: #fff;
+            font-family: Arial, sans-serif;
+            background: url('fondécran.jpg') no-repeat center center fixed;
+            background-size: cover;
             height: 100%;
             display: flex;
             justify-content: center;
@@ -23,20 +20,13 @@
         #chatContainer {
             width: 100%;
             max-width: 600px;
-            margin: 50px auto;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
             padding: 20px;
-            text-align: center;
             display: flex;
             flex-direction: column;
             height: 80%;
             position: relative;
-        }
-
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
         }
 
         #closeBtn {
@@ -45,20 +35,27 @@
             left: 10px;
             font-size: 24px;
             text-decoration: none;
-            color: #ff0000;
+            color: #333;
+            font-weight: bold;
         }
 
         #closeBtn:hover {
-            color: #ff3333;
+            color: #ff0000;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
         }
 
         #messages {
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
         }
 
         .message {
@@ -71,22 +68,19 @@
 
         .sent {
             align-self: flex-end;
-            background-color: #d1f7c4; /* Couleur des messages envoyés */
+            background-color: #d1f7c4;
             text-align: right;
         }
 
         .received {
             align-self: flex-start;
-            background-color: #f1f1f1; /* Couleur des messages reçus */
+            background-color: #f1f1f1;
             text-align: left;
         }
 
         #msgTxt {
             width: calc(100% - 100px);
             padding: 10px;
-            background-color: #444;
-            color: #fff;
-            margin-bottom: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
             outline: none;
@@ -100,32 +94,17 @@
             color: white;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 0.9em;
+            margin-left: 10px;
         }
 
         #msgBtn:hover {
             background-color: #45a049;
         }
 
-        #return-menu-button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        #return-menu-button:hover {
-            background-color: #0056b3;
-        }
-
         @media (max-width: 600px) {
             #chatContainer {
                 width: 95%;
             }
-
             #msgTxt {
                 width: calc(100% - 90px);
             }
@@ -133,9 +112,10 @@
     </style>
 </head>
 <body>
+
     <div id="chatContainer">
         <a id="closeBtn" href="index.html">&times;</a>
-
+        
         <h1>Chat Local</h1>
         <div id="messages"></div>
 
@@ -143,15 +123,11 @@
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
             <button id="msgBtn">Envoyer</button>
         </div>
-
-        <button id="return-menu-button" onclick="goToIndex()">Retour Menu</button>
     </div>
 
-    <!-- Inclure Firebase SDKs Compatibles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-        import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
@@ -165,96 +141,64 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUserId = null;
-        let sender = null;
-
-        function goToIndex() {
-            window.location.href = 'index.html';
-        }
-
-        function promptForSender() {
-            sender = sessionStorage.getItem('sender');
-            if (!sender) {
-                sender = prompt("Quel est ton pseudo ?");
-                sessionStorage.setItem('sender', sender);
-            }
-        }
-
-        function loadMessages() {
-            if (!currentUserId) return;
-
-            const messagesRef = ref(db, 'messages/' + currentUserId);
-            const messageList = document.getElementById('messages');
-            
-            messageList.innerHTML = '';
-
-            onChildAdded(messagesRef, (snapshot) => {
-                const messageData = snapshot.val();
-                if (messageData && messageData.content) {
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = messageData.sender === currentUserId ? 'message sent' : 'message received';
-                    msgDiv.textContent = `${messageData.sender || 'Anonymous'}: ${messageData.content}`;
-                    
-                    messageList.appendChild(msgDiv);
-
-                    // Remove oldest message if there are more than 50 messages
-                    messageList.scrollTop = messageList.scrollHeight;
-                }
-            });
+        const msgTxt = document.getElementById('msgTxt');
+        const messagesContainer = document.getElementById('messages');
+        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
+        if (sessionStorage.getItem('sender') === null) {
+            sessionStorage.setItem('sender', sender);
         }
 
         function sendMsg() {
-            const msgTxt = document.getElementById('msgTxt');
             const msg = msgTxt.value.trim();
-            if (msg && sender) {
-                const timestamp = Date.now();
-                push(ref(db, `messages/${currentUserId}`), {
-                    content: msg,
-                    sender: sender,
-                    timestamp: timestamp
-                }).then(() => {
-                    msgTxt.value = "";
-                    enforceMessageLimit();
+            if (msg) {
+                const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
+                set(ref(db, `messages/${timestamp}`), {
+                    msg: msg,
+                    sender: sender
                 });
+                msgTxt.value = "";
             }
         }
 
-        function enforceMessageLimit() {
-            if (!currentUserId) return;
-
-            const messagesRef = ref(db, `messages/${currentUserId}`);
-            onChildAdded(messagesRef, (snapshot) => {
-                const messages = snapshot.val();
-                const messagesArray = Object.entries(messages)
-                    .map(([key, msg]) => ({ id: key, ...msg }))
-                    .sort((a, b) => a.timestamp - b.timestamp);
-
-                if (messagesArray.length > 50) {
-                    const oldestMessage = messagesArray[0];
-                    remove(ref(db, `messages/${currentUserId}/${oldestMessage.id}`));
-                }
-            });
-        }
-
         document.getElementById('msgBtn').addEventListener('click', sendMsg);
-        document.getElementById('msgTxt').addEventListener('keydown', (event) => {
+
+        msgTxt.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 sendMsg();
             }
         });
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUserId = user.uid;
-                promptForSender();
-                loadMessages();
-            } else {
-                window.location.href = 'profile.html';
-            }
-        });
+        function updateMessages() {
+            messagesContainer.innerHTML = ''; // Clear messages container
+
+            onChildAdded(ref(db, "messages"), (data) => {
+                const messageData = data.val();
+                if (messageData && messageData.msg && messageData.sender) {
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
+                    newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
+                    messagesContainer.appendChild(newMessage);
+
+                    if (messagesContainer.childElementCount > 50) {
+                        const oldestMessage = messagesContainer.firstChild;
+                        if (oldestMessage) {
+                            const timestampToRemove = oldestMessage.getAttribute('data-timestamp');
+                            if (timestampToRemove) {
+                                remove(ref(db, `messages/${timestampToRemove}`));
+                            }
+                            messagesContainer.removeChild(oldestMessage);
+                        }
+                    }
+
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+        }
+
+        updateMessages();
     </script>
+
 </body>
 </html>
