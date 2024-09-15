@@ -145,6 +145,7 @@
         const db = getDatabase(app);
 
         let currentUserId = null;
+        let sender = null;
 
         function goToIndex() {
             window.location.href = 'index.html';
@@ -154,7 +155,7 @@
             const messagesContainer = document.getElementById('messages');
             messagesContainer.innerHTML = '';
 
-            onChildAdded(ref(db, 'messages'), (data) => {
+            onChildAdded(ref(db, 'messages/' + currentUserId), (data) => {
                 const messageData = data.val();
                 if (messageData && messageData.msg && messageData.sender) {
                     const newMessage = document.createElement('div');
@@ -167,7 +168,7 @@
                         if (oldestMessage) {
                             const timestampToRemove = oldestMessage.getAttribute('data-timestamp');
                             if (timestampToRemove) {
-                                remove(ref(db, `messages/${timestampToRemove}`));
+                                remove(ref(db, `messages/${currentUserId}/${timestampToRemove}`));
                             }
                             messagesContainer.removeChild(oldestMessage);
                         }
@@ -181,7 +182,7 @@
         function sendMsg() {
             const msgTxt = document.getElementById('msgTxt');
             const msg = msgTxt.value.trim();
-            if (msg) {
+            if (msg && sender) {
                 const timestamp = Date.now();
                 push(ref(db, `messages/${currentUserId}`), {
                     msg: msg,
