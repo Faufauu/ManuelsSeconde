@@ -130,6 +130,7 @@
 
     <!-- Inclure Firebase SDKs Compatibles -->
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
     <script>
@@ -148,6 +149,7 @@
         // Initialiser Firebase avec la version "compat"
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
 
         // Fonction pour rediriger vers index.html
         function goToIndex() {
@@ -156,7 +158,7 @@
 
         // Fonction pour charger les messages de l'utilisateur connecté
         function loadMessages() {
-            const user = firebase.auth().currentUser;
+            const user = auth.currentUser;
             if (!user) return;
 
             const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
@@ -200,7 +202,7 @@
 
         // Fonction pour sauvegarder un message
         function saveMessage() {
-            const user = firebase.auth().currentUser;
+            const user = auth.currentUser;
             if (!user) {
                 alert("Vous devez être connecté pour enregistrer un message.");
                 return;
@@ -226,7 +228,7 @@
         }
 
         // Charger les messages automatiquement lorsque l'utilisateur se connecte
-        firebase.auth().onAuthStateChanged(user => {
+        auth.onAuthStateChanged(user => {
             if (user) {
                 loadMessages();
             }
