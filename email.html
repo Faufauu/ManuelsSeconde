@@ -220,15 +220,30 @@
             return;
         }
 
-        // Sauvegarder le message dans Firebase
+        // Référence à la base de données pour l'utilisateur
         const messagesRef = db.ref('messages/' + email);
+
+        // Ajouter un nouveau message
         messagesRef.push({
             content: message
-        });
+        }).then(() => {
+            // Après ajout, supprimer les messages excédentaires
+            messagesRef.once('value', (snapshot) => {
+                const messages = snapshot.val();
+                const messageArray = Object.entries(messages);
+                if (messageArray.length > 10) {
+                    // Supprimer les messages les plus anciens
+                    const messagesToDelete = messageArray.slice(0, messageArray.length - 10);
+                    messagesToDelete.forEach(([key]) => {
+                        messagesRef.child(key).remove();
+                    });
+                }
+            });
 
-        // Vider le champ de texte et recharger les messages
-        document.getElementById('message').value = '';
-        loadMessages();
+            // Vider le champ de texte et recharger les messages
+            document.getElementById('message').value = '';
+            loadMessages();
+        });
     }
 
     // Charger les messages automatiquement lorsque l'utilisateur se connecte
@@ -238,5 +253,6 @@
         }
     });
 </script>
+
 </body>
 </html>
