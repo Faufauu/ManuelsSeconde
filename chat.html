@@ -135,7 +135,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, get, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         // Configuration Firebase
         const firebaseConfig = {
@@ -162,15 +162,42 @@
         }
 
         // Fonction pour envoyer un message
-        function sendMsg() {
+        async function sendMsg() {
             const msg = msgTxt.value.trim();
             if (msg) {
                 const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
-                set(ref(db, `messages/${timestamp}`), {
+                const newMessageRef = ref(db, `messages/${timestamp}`);
+
+                // Ajouter le nouveau message
+                await set(newMessageRef, {
                     msg: msg,
                     sender: sender
                 });
+
+                // Limiter les messages à 50
+                await limitMessages();
                 msgTxt.value = "";
+            }
+        }
+
+        // Fonction pour limiter le nombre de messages à 50
+        async function limitMessages() {
+            const messagesRef = ref(db, 'messages');
+            const snapshot = await get(messagesRef);
+
+            // Obtenir tous les messages
+            const messages = snapshot.val();
+            if (messages) {
+                // Convertir en tableau et trier par timestamp
+                const messagesArray = Object.keys(messages).map(key => ({ timestamp: key, ...messages[key] }));
+                messagesArray.sort((a, b) => a.timestamp - b.timestamp);
+
+                // Supprimer les messages les plus anciens si plus de 50 messages
+                if (messagesArray.length > 50) {
+                    const messagesToDelete = messagesArray.slice(0, messagesArray.length - 50);
+                    const deletePromises = messagesToDelete.map(message => remove(ref(db, `messages/${message.timestamp}`)));
+                    await Promise.all(deletePromises);
+                }
             }
         }
 
@@ -191,11 +218,6 @@
             newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
             newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
             messagesContainer.appendChild(newMessage);
-
-            // Limiter le nombre de messages à 50
-            if (messagesContainer.childElementCount > 50) {
-                messagesContainer.removeChild(messagesContainer.firstChild);
-            }
 
             // Faire défiler vers le bas automatiquement
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
