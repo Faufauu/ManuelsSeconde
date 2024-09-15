@@ -3,226 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tchat Seconde</title>
+    <title>Chat Seconde</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* Styles globaux */
-        body, html {
+        /* Style général */
+        body {
+            font-family: 'Rowdies', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
             background: url('fondécran.jpg') no-repeat center center fixed;
             background-size: cover;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: #fff;
         }
 
-        /* Conteneur principal du chat */
-        #chatContainer {
-            width: 100%;
+        .container {
             max-width: 600px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
+            margin: 50px auto;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 80%;
-            position: relative;
-        }
-
-        /* Croix de fermeture */
-        #closeBtn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-
-        #closeBtn:hover {
-            color: #ff0000;
+            background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+            border-radius: 15px;
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
+            font-size: 3em;
             margin-bottom: 20px;
         }
 
-        /* Messages */
-        #messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            padding-right: 10px;
-            display: flex;
-            flex-direction: column;
+        .form-group h5 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
 
-        .message {
-            max-width: 80%;
+        .form-control {
+            width: 100%;
             padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            word-wrap: break-word;
-        }
-
-        .sent {
-            align-self: flex-end;
-            background-color: #d1f7c4;
-            text-align: right;
-        }
-
-        .received {
-            align-self: flex-start;
-            background-color: #f1f1f1;
-            text-align: left;
-        }
-
-        /* Zone de texte et bouton */
-        #msgTxt {
-            width: calc(100% - 100px);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
-
-        #msgBtn {
-            width: 80px;
-            padding: 10px;
+            margin-bottom: 20px;
             border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 10px;
+            border-radius: 5px;
+        }
+
+        #message {
+            background-color: #333;
+            color: #fff;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        /* Bouton Enregistrer en vert */
+        button[onclick="saveMessage()"] {
+            background-color: #28a745; /* Vert */
+            color: white;
+        }
+
+        button[onclick="saveMessage()"]:hover {
+            background-color: #218838; /* Vert plus foncé au survol */
+        }
+
+        /* Bouton Retour Menu en bleu */
+        #return-menu-button {
+            background-color: #007bff; /* Bleu */
+            color: white;
+        }
+
+        #return-menu-button:hover {
+            background-color: #0056b3; /* Bleu plus foncé au survol */
+        }
+
+        #messages h3 {
+            margin-top: 40px;
+            font-size: 1.8em;
+        }
+
+        #messageList div {
+            padding: 10px;
+            background-color: #444;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        #messageList button {
+            background-color: #d33;
+            padding: 5px 10px;
             margin-left: 10px;
+            font-size: 0.9em;
         }
 
-        #msgBtn:hover {
-            background-color: #45a049;
+        #messageList button:hover {
+            background-color: #a00;
         }
 
-        /* Responsive design */
-        @media (max-width: 600px) {
-            #chatContainer {
-                width: 95%;
-            }
-            #msgTxt {
-                width: calc(100% - 90px);
-            }
+        #return-menu-button {
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Chat en Ligne</h1>
 
-    <div id="chatContainer">
-        <!-- Croix de fermeture -->
-        <a id="closeBtn" href="index.html">&times;</a>
-        
-        <h1>Chat Local</h1>
-        <div id="messages"></div>
-
-        <div style="display: flex;">
-            <input type="text" id="msgTxt" placeholder="Tape ton message...">
-            <button id="msgBtn">Envoyer</button>
+        <!-- Entrée pour le message -->
+        <div class="form-group">
+            <h5 for="message">Message</h5>
+            <textarea class="form-control" id="message" rows="3" placeholder="Écris ton message..."></textarea>
         </div>
+
+        <button onclick="saveMessage()">Envoyer</button>
+
+        <!-- Affichage des messages -->
+        <div id="messages">
+            <h3>Messages</h3>
+            <div id="messageList"></div>
+        </div>
+
+        <button id="return-menu-button" onclick="goToIndex()">Retour Menu</button>
     </div>
 
+    <!-- Inclure Firebase SDKs Compatibles -->
     <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, get, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        import { firebaseConfig } from "./firebase-config.js";
 
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-            authDomain: "manuelsseconde.firebaseapp.com",
-            databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "manuelsseconde",
-            storageBucket: "manuelsseconde.appspot.com",
-            messagingSenderId: "369461165606",
-            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
-            measurementId: "G-W508347RVD"
-        };
-
-        // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Variables
-        const msgTxt = document.getElementById('msgTxt');
-        const messagesContainer = document.getElementById('messages');
-        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
-        if (sessionStorage.getItem('sender') === null) {
-            sessionStorage.setItem('sender', sender);
+        let currentUserId = null;
+
+        // Fonction pour rediriger vers index.html
+        function goToIndex() {
+            window.location.href = 'index.html';
         }
 
-        // Fonction pour envoyer un message
-        async function sendMsg() {
-            const msg = msgTxt.value.trim();
-            if (msg) {
-                const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
-                const newMessageRef = ref(db, `messages/${timestamp}`);
+        // Fonction pour charger les messages
+        function loadMessages() {
+            if (!currentUserId) return;
 
-                // Ajouter le nouveau message
-                await set(newMessageRef, {
-                    msg: msg,
-                    sender: sender
-                });
+            const messageList = document.getElementById('messageList');
+            const messagesRef = ref(db, 'messages/' + currentUserId);
 
-                // Limiter les messages à 50
-                await limitMessages();
-                msgTxt.value = "";
-            }
-        }
+            // Vider la zone de message
+            messageList.innerHTML = '';
 
-        // Fonction pour limiter le nombre de messages à 50
-        async function limitMessages() {
-            const messagesRef = ref(db, 'messages');
-            const snapshot = await get(messagesRef);
+            // Récupérer les messages depuis Firebase
+            onValue(messagesRef, (snapshot) => {
+                const messages = snapshot.val();
 
-            // Obtenir tous les messages
-            const messages = snapshot.val();
-            if (messages) {
-                // Convertir en tableau et trier par timestamp
-                const messagesArray = Object.keys(messages).map(key => ({ timestamp: key, ...messages[key] }));
-                messagesArray.sort((a, b) => a.timestamp - b.timestamp);
+                if (messages) {
+                    // Convertir les messages en tableau pour tri
+                    const messagesArray = Object.entries(messages)
+                        .map(([key, msg]) => ({ id: key, ...msg }))
+                        .sort((a, b) => a.timestamp - b.timestamp);
 
-                // Supprimer les messages les plus anciens si plus de 50 messages
-                if (messagesArray.length > 50) {
-                    const messagesToDelete = messagesArray.slice(0, messagesArray.length - 50);
-                    const deletePromises = messagesToDelete.map(message => remove(ref(db, `messages/${message.timestamp}`)));
-                    await Promise.all(deletePromises);
+                    messagesArray.forEach(({ id, content }) => {
+                        // Vérifier si le contenu est défini
+                        const msgContent = content || "Message sans contenu";
+                        
+                        const msgDiv = document.createElement('div');
+                        msgDiv.textContent = msgContent;
+
+                        // Ajouter un bouton pour supprimer le message
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Supprimer';
+                        deleteButton.onclick = () => deleteMessage(id);
+
+                        msgDiv.appendChild(deleteButton);
+                        messageList.appendChild(msgDiv);
+                    });
+                } else {
+                    messageList.innerHTML = '<p>Aucun message.</p>';
                 }
-            }
+            });
         }
 
-        // Attacher l'événement pour envoyer un message lorsque le bouton est cliqué
-        document.getElementById('msgBtn').addEventListener('click', sendMsg);
+        // Fonction pour supprimer un message
+        function deleteMessage(messageId) {
+            if (!currentUserId) return;
 
-        // Fonction pour envoyer un message avec "Entrer"
-        msgTxt.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                sendMsg();
+            // Supprimer le message de Firebase
+            remove(ref(db, 'messages/' + currentUserId + '/' + messageId));
+        }
+
+        // Fonction pour sauvegarder un message
+        function saveMessage() {
+            const message = document.getElementById('message').value;
+
+            if (!message) {
+                alert("Veuillez entrer un message.");
+                return;
             }
-        });
 
-        // Fonction pour afficher les messages reçus
-        onChildAdded(ref(db, "messages"), (data) => {
-            const messageData = data.val();
-            const newMessage = document.createElement('div');
-            newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
-            newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
-            messagesContainer.appendChild(newMessage);
+            if (!currentUserId) return;
 
-            // Faire défiler vers le bas automatiquement
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Ajouter un nouveau message
+            const messagesRef = ref(db, 'messages/' + currentUserId);
+
+            push(messagesRef, {
+                content: message,
+                timestamp: Date.now()
+            }).then(() => {
+                // Vider le champ de texte et recharger les messages
+                document.getElementById('message').value = '';
+                loadMessages();
+            });
+        }
+
+        // Charger l'utilisateur courant et ses messages
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                loadMessages();
+            } else {
+                // Rediriger vers la page de connexion si non authentifié
+                window.location.href = 'profile.html';
+            }
         });
     </script>
-
 </body>
 </html>
