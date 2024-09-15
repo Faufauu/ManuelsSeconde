@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat en Direct</title>
+    <title>Chat Seconde</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
@@ -15,20 +15,42 @@
             background: url('fondécran.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
+            width: 100%;
             max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
             background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
             border-radius: 15px;
+            padding: 20px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 80%;
+            position: relative;
         }
 
         h1 {
             font-size: 3em;
             margin-bottom: 20px;
+        }
+
+        #closeBtn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #closeBtn:hover {
+            color: #ff0000;
         }
 
         .form-group h5 {
@@ -39,14 +61,11 @@
         .form-control {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        #pseudo, #message {
             background-color: #333;
             color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
 
         button {
@@ -59,7 +78,7 @@
             margin: 10px;
         }
 
-        /* Bouton Envoyer en vert */
+        /* Bouton Enregistrer en vert */
         button[onclick="saveMessage()"] {
             background-color: #28a745; /* Vert */
             color: white;
@@ -79,68 +98,101 @@
             background-color: #0056b3; /* Bleu plus foncé au survol */
         }
 
-        #messages h3 {
-            margin-top: 40px;
-            font-size: 1.8em;
+        #messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
         }
 
-        #messageList div {
+        .message {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+
+        .sent {
+            align-self: flex-end;
+            background-color: #d1f7c4;
+            text-align: right;
+        }
+
+        .received {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            text-align: left;
+        }
+
+        #msgTxt {
+            width: calc(100% - 100px);
             padding: 10px;
             background-color: #444;
             margin-bottom: 10px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
         }
 
-        #messageList button {
-            background-color: #d33;
-            padding: 5px 10px;
+        #msgBtn {
+            width: 80px;
+            padding: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
             margin-left: 10px;
             font-size: 0.9em;
         }
 
-        #messageList button:hover {
-            background-color: #a00;
+        #msgBtn:hover {
+            background-color: #45a049;
         }
 
-        #return-menu-button {
-            margin-top: 30px;
+        @media (max-width: 600px) {
+            #chatContainer {
+                width: 95%;
+            }
+            #msgTxt {
+                width: calc(100% - 90px);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Chat en Direct</h1>
-
-        <!-- Entrée pour le pseudo -->
-        <div class="form-group">
-            <h5 for="pseudo">Pseudo</h5>
-            <input type="text" class="form-control" id="pseudo" placeholder="Entre ton pseudo...">
-        </div>
+        <a id="closeBtn" href="index.html">&times;</a>
+        <h1>Chat Seconde</h1>
 
         <!-- Entrée pour le message -->
         <div class="form-group">
             <h5 for="message">Message</h5>
-            <textarea class="form-control" id="message" rows="3" placeholder="Ton message..."></textarea>
+            <textarea class="form-control" id="message" rows="3" placeholder="Écris ton message..."></textarea>
         </div>
 
         <button onclick="saveMessage()">Envoyer</button>
 
         <!-- Affichage des messages -->
-        <div id="messages">
-            <h3>Messages</h3>
-            <div id="messageList"></div>
+        <div id="messages"></div>
+
+        <div style="display: flex;">
+            <input type="text" id="msgTxt" placeholder="Tape ton message...">
+            <button id="msgBtn">Envoyer</button>
         </div>
 
         <button id="return-menu-button" onclick="goToIndex()">Retour Menu</button>
     </div>
 
     <!-- Inclure Firebase SDKs Compatibles -->
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    <script>
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
             authDomain: "manuelsseconde.firebaseapp.com",
@@ -152,101 +204,111 @@
             measurementId: "G-W508347RVD"
         };
 
-        // Initialiser Firebase avec la version "compat"
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
 
         // Fonction pour rediriger vers index.html
         function goToIndex() {
             window.location.href = 'index.html';
         }
 
-        // Fonction pour charger les messages du pseudo entré
+        // Fonction pour charger les messages
         function loadMessages() {
-            const pseudo = document.getElementById('pseudo').value;
-            const messageList = document.getElementById('messageList');
+            if (!currentUserId) return;
+
+            const messageList = document.getElementById('messages');
+            const messagesRef = ref(db, 'messages/' + currentUserId);
 
             // Vider la zone de message
             messageList.innerHTML = '';
 
-            if (!pseudo) return;
-
-            // Récupérer les messages depuis Firebase pour ce pseudo
-            const messagesRef = db.ref('messages/' + pseudo).limitToLast(50);
-            messagesRef.once('value', (snapshot) => {
+            // Récupérer les messages depuis Firebase
+            onValue(messagesRef, (snapshot) => {
                 const messages = snapshot.val();
 
                 if (messages) {
-                    // Convertir en tableau pour trier les messages par clé
-                    const messageArray = Object.entries(messages).sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
+                    // Convertir les messages en tableau pour tri
+                    const messagesArray = Object.entries(messages)
+                        .map(([key, msg]) => ({ id: key, ...msg }))
+                        .sort((a, b) => a.timestamp - b.timestamp);
 
-                    // Afficher les messages triés
-                    messageArray.forEach(([key, msg]) => {
+                    messagesArray.forEach(({ id, content, sender }) => {
+                        // Vérifier si le contenu est défini
+                        const msgContent = content || "Message sans contenu";
+
                         const msgDiv = document.createElement('div');
-                        msgDiv.textContent = msg.content;
+                        msgDiv.textContent = msgContent;
+                        msgDiv.classList.add(sender === currentUserId ? 'sent' : 'received');
 
                         // Ajouter un bouton pour supprimer le message
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = 'Supprimer';
-                        deleteButton.onclick = () => deleteMessage(pseudo, key);
+                        deleteButton.onclick = () => deleteMessage(id);
 
                         msgDiv.appendChild(deleteButton);
                         messageList.appendChild(msgDiv);
                     });
+
+                    // Limiter à 50 messages
+                    if (messagesArray.length > 50) {
+                        const excessMessages = messagesArray.slice(0, messagesArray.length - 50);
+                        excessMessages.forEach(({ id }) => {
+                            remove(ref(db, 'messages/' + currentUserId + '/' + id));
+                        });
+                    }
                 } else {
-                    messageList.innerHTML = '<p>Aucun message pour ce pseudo.</p>';
+                    messageList.innerHTML = '<p>Aucun message.</p>';
                 }
             });
         }
 
         // Fonction pour supprimer un message
-        function deleteMessage(pseudo, messageId) {
-            // Supprimer le message de Firebase
-            db.ref('messages/' + pseudo + '/' + messageId).remove();
+        function deleteMessage(messageId) {
+            if (!currentUserId) return;
 
-            // Recharger les messages
-            loadMessages();
+            // Supprimer le message de Firebase
+            remove(ref(db, 'messages/' + currentUserId + '/' + messageId));
         }
 
         // Fonction pour sauvegarder un message
         function saveMessage() {
-            const pseudo = document.getElementById('pseudo').value;
             const message = document.getElementById('message').value;
 
-            if (!pseudo || !message) {
-                alert("Veuillez entrer un pseudo et un message.");
+            if (!message) {
+                alert("Veuillez entrer un message.");
                 return;
             }
 
-            // Référence à la base de données pour le pseudo
-            const messagesRef = db.ref('messages/' + pseudo);
+            if (!currentUserId) return;
 
             // Ajouter un nouveau message
-            messagesRef.push({
-                content: message
-            }).then(() => {
-                // Après ajout, supprimer les messages excédentaires
-                messagesRef.once('value', (snapshot) => {
-                    const messages = snapshot.val();
-                    const messageArray = Object.entries(messages);
-                    if (messageArray.length > 50) {
-                        // Supprimer les messages les plus anciens
-                        const messagesToDelete = messageArray.slice(0, messageArray.length - 50);
-                        messagesToDelete.forEach(([key]) => {
-                            messagesRef.child(key).remove();
-                        });
-                    }
-                });
+            const messagesRef = ref(db, 'messages/' + currentUserId);
 
+            push(messagesRef, {
+                content: message,
+                timestamp: Date.now(),
+                sender: currentUserId
+            }).then(() => {
                 // Vider le champ de texte et recharger les messages
                 document.getElementById('message').value = '';
                 loadMessages();
             });
         }
 
-        // Charger les messages automatiquement lorsque le pseudo change
-        document.getElementById('pseudo').addEventListener('input', loadMessages);
+        // Charger l'utilisateur courant et ses messages
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                loadMessages();
+            } else {
+                // Rediriger vers la page de connexion si non authentifié
+                window.location.href = 'profile.html';
+            }
+        });
     </script>
+
 </body>
 </html>
