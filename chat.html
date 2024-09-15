@@ -71,13 +71,13 @@
 
         .sent {
             align-self: flex-end;
-            background-color: #d1f7c4;
+            background-color: #d1f7c4; /* Couleur des messages envoyés */
             text-align: right;
         }
 
         .received {
             align-self: flex-start;
-            background-color: #f1f1f1;
+            background-color: #f1f1f1; /* Couleur des messages reçus */
             text-align: left;
         }
 
@@ -169,9 +169,18 @@
         const db = getDatabase(app);
 
         let currentUserId = null;
+        let sender = null;
 
         function goToIndex() {
             window.location.href = 'index.html';
+        }
+
+        function promptForSender() {
+            sender = sessionStorage.getItem('sender');
+            if (!sender) {
+                sender = prompt("Quel est ton pseudo ?");
+                sessionStorage.setItem('sender', sender);
+            }
         }
 
         function loadMessages() {
@@ -200,11 +209,11 @@
         function sendMsg() {
             const msgTxt = document.getElementById('msgTxt');
             const msg = msgTxt.value.trim();
-            if (msg) {
+            if (msg && sender) {
                 const timestamp = Date.now();
                 push(ref(db, `messages/${currentUserId}`), {
                     content: msg,
-                    sender: currentUserId,
+                    sender: sender,
                     timestamp: timestamp
                 }).then(() => {
                     msgTxt.value = "";
@@ -240,6 +249,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUserId = user.uid;
+                promptForSender();
                 loadMessages();
             } else {
                 window.location.href = 'profile.html';
