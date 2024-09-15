@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Seconde</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rowdies:wght@400;700&display=swap">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* Style général */
-        body {
-            font-family: 'Rowdies', sans-serif;
         body, html {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Rowdies', sans-serif;
             background: url('fondécran.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
@@ -20,60 +19,51 @@
             justify-content: center;
             align-items: center;
         }
-
         .container {
-        #chatContainer {
             width: 100%;
             max-width: 600px;
             margin: 50px auto;
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
-            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
             text-align: center;
             display: flex;
             flex-direction: column;
             height: 80%;
             position: relative;
         }
-
         h1 {
             font-size: 3em;
             margin-bottom: 20px;
+            color: #fff;
+        }
         #closeBtn {
             position: absolute;
             top: 10px;
             left: 10px;
             font-size: 24px;
             text-decoration: none;
-            color: #333;
+            color: #fff;
             font-weight: bold;
         }
-
-        .form-group h5 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
         #closeBtn:hover {
             color: #ff0000;
         }
-
+        .form-group h5 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
         .form-control {
             width: 100%;
             padding: 10px;
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            border: none;
+            margin-bottom: 10px;
             border-radius: 5px;
-        }
-
-        #message {
+            border: 1px solid #ddd;
+            box-sizing: border-box;
             background-color: #333;
             color: #fff;
         }
-
         button {
             padding: 10px 20px;
             font-size: 1.1em;
@@ -83,11 +73,20 @@
             transition: background-color 0.3s ease;
             margin: 10px;
         }
-
-        /* Bouton Enregistrer en vert */
         button[onclick="saveMessage()"] {
-            background-color: #28a745; /* Vert */
+            background-color: #28a745;
             color: white;
+        }
+        button[onclick="saveMessage()"]:hover {
+            background-color: #218838;
+        }
+        #return-menu-button {
+            background-color: #007bff;
+            color: white;
+        }
+        #return-menu-button:hover {
+            background-color: #0056b3;
+        }
         #messages {
             flex-grow: 1;
             overflow-y: auto;
@@ -96,15 +95,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        button[onclick="saveMessage()"]:hover {
-            background-color: #218838; /* Vert plus foncé au survol */
-        }
-
-        /* Bouton Retour Menu en bleu */
-        #return-menu-button {
-            background-color: #007bff; /* Bleu */
-            color: white;
         .message {
             max-width: 80%;
             padding: 10px;
@@ -112,61 +102,18 @@
             margin: 5px 0;
             word-wrap: break-word;
         }
-
-        #return-menu-button:hover {
-            background-color: #0056b3; /* Bleu plus foncé au survol */
         .sent {
             align-self: flex-end;
             background-color: #d1f7c4;
             text-align: right;
         }
-
-        #messages h3 {
-            margin-top: 40px;
-            font-size: 1.8em;
         .received {
             align-self: flex-start;
             background-color: #f1f1f1;
             text-align: left;
         }
-
-        #messageList div {
-        #msgTxt {
-            width: calc(100% - 100px);
-            padding: 10px;
-            background-color: #444;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
-
-        #messageList button {
-            background-color: #d33;
-            padding: 5px 10px;
-        #msgBtn {
-            width: 80px;
-            padding: 10px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 0.9em;
-        }
-
-        #messageList button:hover {
-            background-color: #a00;
-        #msgBtn:hover {
-            background-color: #45a049;
-        }
-
-        #return-menu-button {
-            margin-top: 30px;
         @media (max-width: 600px) {
-            #chatContainer {
+            .container {
                 width: 95%;
             }
             #msgTxt {
@@ -177,52 +124,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Chat en Ligne</h1>
-
-        <!-- Entrée pour le message -->
-        <div class="form-group">
-            <h5 for="message">Message</h5>
-            <textarea class="form-control" id="message" rows="3" placeholder="Écris ton message..."></textarea>
-        </div>
-
-        <button onclick="saveMessage()">Envoyer</button>
-    <div id="chatContainer">
         <a id="closeBtn" href="index.html">&times;</a>
-
-        <h1>Chat Local</h1>
+        <h1>Chat en Ligne</h1>
         <div id="messages"></div>
-
-        <!-- Affichage des messages -->
-        <div id="messages">
-            <h3>Messages</h3>
-            <div id="messageList"></div>
         <div style="display: flex;">
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
             <button id="msgBtn">Envoyer</button>
         </div>
-
         <button id="return-menu-button" onclick="goToIndex()">Retour Menu</button>
     </div>
 
-    <!-- Inclure Firebase SDKs Compatibles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
         import { firebaseConfig } from "./firebase-config.js";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-            authDomain: "manuelsseconde.firebaseapp.com",
-            databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "manuelsseconde",
-            storageBucket: "manuelsseconde.appspot.com",
-            messagingSenderId: "369461165606",
-            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
-            measurementId: "G-W508347RVD"
-        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -230,107 +146,15 @@
 
         let currentUserId = null;
 
-        // Fonction pour rediriger vers index.html
         function goToIndex() {
             window.location.href = 'index.html';
         }
 
-        // Fonction pour charger les messages
-        function loadMessages() {
-            if (!currentUserId) return;
-
-            const messageList = document.getElementById('messageList');
-            const messagesRef = ref(db, 'messages/' + currentUserId);
-
-            // Vider la zone de message
-            messageList.innerHTML = '';
-
-            // Récupérer les messages depuis Firebase
-            onValue(messagesRef, (snapshot) => {
-                const messages = snapshot.val();
-
-                if (messages) {
-                    // Convertir les messages en tableau pour tri
-                    const messagesArray = Object.entries(messages)
-                        .map(([key, msg]) => ({ id: key, ...msg }))
-                        .sort((a, b) => a.timestamp - b.timestamp);
-
-                    messagesArray.forEach(({ id, content }) => {
-                        // Vérifier si le contenu est défini
-                        const msgContent = content || "Message sans contenu";
-
-                        const msgDiv = document.createElement('div');
-                        msgDiv.textContent = msgContent;
-
-                        // Ajouter un bouton pour supprimer le message
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Supprimer';
-                        deleteButton.onclick = () => deleteMessage(id);
-
-                        msgDiv.appendChild(deleteButton);
-                        messageList.appendChild(msgDiv);
-                    });
-                } else {
-                    messageList.innerHTML = '<p>Aucun message.</p>';
-                }
-            });
-        }
-
-        // Fonction pour supprimer un message
-        function deleteMessage(messageId) {
-            if (!currentUserId) return;
-
-            // Supprimer le message de Firebase
-            remove(ref(db, 'messages/' + currentUserId + '/' + messageId));
-        const msgTxt = document.getElementById('msgTxt');
-        const messagesContainer = document.getElementById('messages');
-        let sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
-        if (sessionStorage.getItem('sender') === null) {
-            sessionStorage.setItem('sender', sender);
-        }
-
-        function sendMsg() {
-            const msg = msgTxt.value.trim();
-            if (msg) {
-                const timestamp = new Date().getTime(); // Utilisation d'un timestamp unique
-                set(ref(db, `messages/${timestamp}`), {
-                    msg: msg,
-                    sender: sender
-                });
-                msgTxt.value = "";
-            }
-        }
-
-        // Fonction pour sauvegarder un message
-        function saveMessage() {
-            const message = document.getElementById('message').value;
-        document.getElementById('msgBtn').addEventListener('click', sendMsg);
-
-            if (!message) {
-                alert("Veuillez entrer un message.");
-                return;
-        msgTxt.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                sendMsg();
-            }
-        });
-
-            if (!currentUserId) return;
-
-            // Ajouter un nouveau message
-            const messagesRef = ref(db, 'messages/' + currentUserId);
-
-            push(messagesRef, {
-                content: message,
-                timestamp: Date.now()
-            }).then(() => {
-                // Vider le champ de texte et recharger les messages
-                document.getElementById('message').value = '';
-                loadMessages();
         function updateMessages() {
-            messagesContainer.innerHTML = ''; // Clear messages container
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '';
 
-            onChildAdded(ref(db, "messages"), (data) => {
+            onChildAdded(ref(db, 'messages'), (data) => {
                 const messageData = data.val();
                 if (messageData && messageData.msg && messageData.sender) {
                     const newMessage = document.createElement('div');
@@ -354,18 +178,41 @@
             });
         }
 
-        // Charger l'utilisateur courant et ses messages
+        function sendMsg() {
+            const msgTxt = document.getElementById('msgTxt');
+            const msg = msgTxt.value.trim();
+            if (msg) {
+                const timestamp = Date.now();
+                push(ref(db, `messages/${currentUserId}`), {
+                    msg: msg,
+                    sender: sender,
+                    timestamp: timestamp
+                }).then(() => {
+                    msgTxt.value = '';
+                    updateMessages();
+                });
+            }
+        }
+
+        document.getElementById('msgBtn').addEventListener('click', sendMsg);
+        document.getElementById('msgTxt').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendMsg();
+            }
+        });
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUserId = user.uid;
-                loadMessages();
+                sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
+                if (sessionStorage.getItem('sender') === null) {
+                    sessionStorage.setItem('sender', sender);
+                }
+                updateMessages();
             } else {
-                // Rediriger vers la page de connexion si non authentifié
                 window.location.href = 'profile.html';
             }
         });
-        updateMessages();
     </script>
-
 </body>
 </html>
