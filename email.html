@@ -134,105 +134,109 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
-            authDomain: "manuelsseconde.firebaseapp.com",
-            databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "manuelsseconde",
-            storageBucket: "manuelsseconde.appspot.com",
-            messagingSenderId: "369461165606",
-            appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
-            measurementId: "G-W508347RVD"
-        };
+    // Configuration Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
+        authDomain: "manuelsseconde.firebaseapp.com",
+        databaseURL: "https://manuelsseconde-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "manuelsseconde",
+        storageBucket: "manuelsseconde.appspot.com",
+        messagingSenderId: "369461165606",
+        appId: "1:369461165606:web:6bd9186ee95e3701d3f0e7",
+        measurementId: "G-W508347RVD"
+    };
 
-        // Initialiser Firebase avec la version "compat"
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+    // Initialiser Firebase avec la version "compat"
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
 
-        // Fonction pour rediriger vers index.html
-        function goToIndex() {
-            window.location.href = 'index.html';
-        }
+    // Fonction pour rediriger vers index.html
+    function goToIndex() {
+        window.location.href = 'index.html';
+    }
 
-        // Fonction pour charger les messages de l'utilisateur connecté
-        function loadMessages() {
-            const user = auth.currentUser;
-            if (!user) return;
+    // Fonction pour charger les messages de l'utilisateur connecté
+    function loadMessages() {
+        const user = auth.currentUser;
+        if (!user) return;
 
-            const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
-            const messageList = document.getElementById('messageList');
+        const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
+        const messageList = document.getElementById('messageList');
 
-            // Vider la zone de message
-            messageList.innerHTML = '';
+        // Vider la zone de message
+        messageList.innerHTML = '';
 
-            // Récupérer les messages depuis Firebase pour l'utilisateur connecté
-            const messagesRef = db.ref('messages/' + email);
-            messagesRef.once('value', (snapshot) => {
-                const messages = snapshot.val();
+        // Récupérer les 10 derniers messages depuis Firebase pour l'utilisateur connecté
+        const messagesRef = db.ref('messages/' + email).limitToLast(10);
+        messagesRef.once('value', (snapshot) => {
+            const messages = snapshot.val();
 
-                if (messages) {
-                    Object.entries(messages).forEach(([key, msg]) => {
-                        const msgDiv = document.createElement('div');
-                        msgDiv.textContent = msg.content;
+            if (messages) {
+                // Convertir en tableau pour trier les messages par clé
+                const messageArray = Object.entries(messages).sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
 
-                        // Ajouter un bouton pour supprimer le message
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Supprimer';
-                        deleteButton.onclick = () => deleteMessage(email, key);
+                // Afficher les messages triés
+                messageArray.forEach(([key, msg]) => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.textContent = msg.content;
 
-                        msgDiv.appendChild(deleteButton);
-                        messageList.appendChild(msgDiv);
-                    });
-                } else {
-                    messageList.innerHTML = '<p>Aucun message pour cet utilisateur.</p>';
-                }
-            });
-        }
+                    // Ajouter un bouton pour supprimer le message
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Supprimer';
+                    deleteButton.onclick = () => deleteMessage(email, key);
 
-        // Fonction pour supprimer un message
-        function deleteMessage(email, messageId) {
-            // Supprimer le message de Firebase
-            db.ref('messages/' + email + '/' + messageId).remove();
-
-            // Recharger les messages
-            loadMessages();
-        }
-
-        // Fonction pour sauvegarder un message
-        function saveMessage() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Vous devez être connecté pour enregistrer un message.");
-                return;
-            }
-
-            const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
-            const message = document.getElementById('message').value;
-
-            if (!message) {
-                alert("Veuillez entrer un message.");
-                return;
-            }
-
-            // Sauvegarder le message dans Firebase
-            const messagesRef = db.ref('messages/' + email);
-            messagesRef.push({
-                content: message
-            });
-
-            // Vider le champ de texte et recharger les messages
-            document.getElementById('message').value = '';
-            loadMessages();
-        }
-
-        // Charger les messages automatiquement lorsque l'utilisateur se connecte
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loadMessages();
+                    msgDiv.appendChild(deleteButton);
+                    messageList.appendChild(msgDiv);
+                });
+            } else {
+                messageList.innerHTML = '<p>Aucun message pour cet utilisateur.</p>';
             }
         });
-    </script>
+    }
+
+    // Fonction pour supprimer un message
+    function deleteMessage(email, messageId) {
+        // Supprimer le message de Firebase
+        db.ref('messages/' + email + '/' + messageId).remove();
+
+        // Recharger les messages
+        loadMessages();
+    }
+
+    // Fonction pour sauvegarder un message
+    function saveMessage() {
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Vous devez être connecté pour enregistrer un message.");
+            return;
+        }
+
+        const email = user.email.replace(/\./g, '_'); // Remplacer les points dans l'email par des underscores
+        const message = document.getElementById('message').value;
+
+        if (!message) {
+            alert("Veuillez entrer un message.");
+            return;
+        }
+
+        // Sauvegarder le message dans Firebase
+        const messagesRef = db.ref('messages/' + email);
+        messagesRef.push({
+            content: message
+        });
+
+        // Vider le champ de texte et recharger les messages
+        document.getElementById('message').value = '';
+        loadMessages();
+    }
+
+    // Charger les messages automatiquement lorsque l'utilisateur se connecte
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            loadMessages();
+        }
+    });
+</script>
 </body>
 </html>
