@@ -127,7 +127,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, onValue, remove, query, limitToFirst } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_o5fz_3ELok5uTDgJfIhL7hzqv4-US6I",
@@ -180,19 +180,23 @@
                     newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
                     newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
                     messagesContainer.appendChild(newMessage);
-
-                    if (messagesContainer.childElementCount > 50) {
-                        const oldestMessage = messagesContainer.firstChild;
-                        if (oldestMessage) {
-                            const timestampToRemove = oldestMessage.getAttribute('data-timestamp');
-                            if (timestampToRemove) {
-                                remove(ref(db, `messages/${timestampToRemove}`));
-                            }
-                            messagesContainer.removeChild(oldestMessage);
-                        }
-                    }
-
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+
+            // Suppression des anciens messages dans Firebase si plus de 50
+            onValue(ref(db, "messages"), (snapshot) => {
+                const messages = snapshot.val();
+                const messageKeys = Object.keys(messages || {});
+
+                if (messageKeys.length > 50) {
+                    const oldestMessagesQuery = query(ref(db, "messages"), limitToFirst(messageKeys.length - 50));
+
+                    onValue(oldestMessagesQuery, (snapshot) => {
+                        snapshot.forEach((messageSnapshot) => {
+                            remove(ref(db, `messages/${messageSnapshot.key}`));
+                        });
+                    });
                 }
             });
         }
