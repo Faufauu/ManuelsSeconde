@@ -109,6 +109,44 @@
                 width: calc(100% - 90px);
             }
         }
+
+        #pseudoModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #pseudoForm {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #pseudoForm input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        #pseudoForm button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #pseudoForm button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +163,15 @@
         </div>
     </div>
 
+    <!-- Modal pour définir le pseudo -->
+    <div id="pseudoModal" style="display: none;">
+        <div id="pseudoForm">
+            <h2>Choisissez un pseudo</h2>
+            <input type="text" id="pseudoInput" placeholder="Entrez votre pseudo">
+            <button id="pseudoBtn">Confirmer</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
         import { getDatabase, ref, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -137,8 +184,40 @@
 
         const msgTxt = document.getElementById('msgTxt');
         const messagesContainer = document.getElementById('messages');
+        const pseudoModal = document.getElementById('pseudoModal');
+        const pseudoInput = document.getElementById('pseudoInput');
+        const pseudoBtn = document.getElementById('pseudoBtn');
+
         let sender = null;
 
+        // Sauvegarder le pseudo dans Firebase
+        function savePseudo(pseudo) {
+            const userRef = ref(db, `users/${auth.currentUser.uid}/pseudo`);
+            set(userRef, pseudo);
+        }
+
+        // Afficher le modal pour définir le pseudo
+        function showPseudoModal() {
+            pseudoModal.style.display = 'flex';
+        }
+
+        // Masquer le modal
+        function hidePseudoModal() {
+            pseudoModal.style.display = 'none';
+        }
+
+        // Enregistrer le pseudo et fermer le modal
+        pseudoBtn.addEventListener('click', () => {
+            const pseudo = pseudoInput.value.trim();
+            if (pseudo) {
+                savePseudo(pseudo);
+                sender = pseudo;
+                hidePseudoModal();
+                updateMessages(); // Charger les messages après avoir défini le pseudo
+            }
+        });
+
+        // Envoyer un message
         function sendMsg() {
             const msg = msgTxt.value.trim();
             if (msg && sender) {
@@ -188,9 +267,20 @@
         // Vérifier l'état de connexion
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                sender = user.email; // Utiliser l'email de l'utilisateur connecté comme pseudo
-                updateMessages(); // Mettre à jour les messages
+                console.log('Utilisateur connecté :', user.email);
+                
+                const userPseudoRef = ref(db, `users/${user.uid}/pseudo`);
+                userPseudoRef.get().then((snapshot) => {
+                    if (snapshot.exists()) {
+                        sender = snapshot.val();
+                        updateMessages(); // Charger les messages si le pseudo est déjà défini
+                    } else {
+                        showPseudoModal(); // Afficher le modal si le pseudo n'est pas défini
+                    }
+                });
+
             } else {
+                console.log('Aucun utilisateur connecté, redirection vers la page de connexion.');
                 // Si aucun utilisateur n'est connecté, rediriger vers la page de connexion
                 window.location.href = 'profil.html';
             }
