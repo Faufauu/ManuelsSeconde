@@ -167,7 +167,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getDatabase, ref, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded, remove, get, query, orderByKey } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -193,15 +193,13 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // L'utilisateur est connecté
-                loginContainer.style.display = 'none'; // Masquer le formulaire de connexion
+                loginContainer.style.display = 'none';
                 if (!sender) {
                     sender = prompt('Quel est ton pseudo ?');
                     sessionStorage.setItem('sender', sender);
                 }
             } else {
-                // L'utilisateur n'est pas connecté
-                loginContainer.style.display = 'block'; // Afficher le formulaire de connexion
+                loginContainer.style.display = 'block';
             }
         });
 
@@ -219,7 +217,8 @@
                 const timestamp = new Date().getTime();
                 set(ref(db, `messages/${timestamp}`), {
                     msg: msg,
-                    sender: sender
+                    sender: sender,
+                    timestamp: timestamp // Stocker le timestamp pour chaque message
                 });
                 msgTxt.value = "";
             }
@@ -244,24 +243,24 @@
                     newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
                     messagesContainer.appendChild(newMessage);
 
-                    if (messagesContainer.childElementCount > 50) {
-                        const oldestMessage = messagesContainer.firstChild;
-                        if (oldestMessage) {
-                            const timestampToRemove = oldestMessage.getAttribute('data-timestamp');
-                            if (timestampToRemove) {
-                                remove(ref(db, `messages/${timestampToRemove}`));
-                            }
-                            messagesContainer.removeChild(oldestMessage);
-                        }
-                    }
-
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
+            });
+
+            // Supprimer les messages de plus de 10 heures
+            const tenHoursAgo = Date.now() - 10 * 60 * 60 * 1000;
+            const queryRef = query(ref(db, 'messages'), orderByKey());
+            get(queryRef).then((snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const messageData = childSnapshot.val();
+                    if (messageData.timestamp < tenHoursAgo) {
+                        remove(ref(db, `messages/${childSnapshot.key}`)); // Supprimer les anciens messages
+                    }
+                });
             });
         }
 
         updateMessages();
     </script>
-
 </body>
 </html>
