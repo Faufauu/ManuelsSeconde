@@ -6,197 +6,199 @@
     <title>Chat Seconde</title>
     <style>
         body, html {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: url('fondécran.jpg') no-repeat center center fixed;
-            background-size: cover;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: url('fondécran.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
-        #chatContainer {
-            width: 100%;
-            max-width: 600px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 80%;
-            position: relative;
-        }
+#chatContainer {
+    width: 100%;
+    max-width: 600px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    position: relative;
+}
 
-        #closeBtn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
+#closeBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
 
-        #closeBtn:hover {
-            color: #ff0000;
-        }
+#closeBtn:hover {
+    color: #ff0000;
+}
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
 
-        #messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            padding-right: 10px;
-            display: flex;
-            flex-direction: column;
-        }
+#messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+}
 
-        .message {
-            max-width: 80%;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            word-wrap: break-word;
-        }
+.message {
+    max-width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
+    word-wrap: break-word;
+}
 
-        .sent {
-            align-self: flex-end;
-            background-color: #d1f7c4;
-            text-align: right;
-        }
+.sent {
+    align-self: flex-end;
+    background-color: #d1f7c4;
+    text-align: right;
+}
 
-        .received {
-            align-self: flex-start;
-            background-color: #f1f1f1;
-            text-align: left;
-        }
+.received {
+    align-self: flex-start;
+    background-color: #f1f1f1;
+    text-align: left;
+}
 
-        #msgTxt {
-            width: calc(100% - 120px);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
+#msgTxt {
+    width: calc(100% - 120px);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+}
 
-        #emojiBtn {
-            width: 40px;
-            padding: 10px;
-            border: none;
-            background-color: #ffcc00;
-            color: black;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
+#emojiBtn {
+    width: 40px;
+    padding: 10px;
+    border: none;
+    background-color: #000; /* Couleur de fond noir */
+    color: #fff; /* Couleur du texte blanc */
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 5px;
+}
 
-        #emojiBtn:hover {
-            background-color: #ffdd44;
-        }
+#emojiBtn:hover {
+    background-color: #333; /* Effet de survol plus clair */
+}
 
-        #msgBtn {
-            width: 80px;
-            padding: 10px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
+#msgBtn {
+    width: 80px;
+    padding: 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
 
-        #msgBtn:hover {
-            background-color: #45a049;
-        }
+#msgBtn:hover {
+    background-color: #45a049;
+}
 
-        #clearBtn {
-            width: 40px;
-            padding: 10px;
-            border: none;
-            background-color: #ccc;
-            color: black;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
+#clearBtn {
+    width: 40px;
+    padding: 10px;
+    border: none;
+    background-color: #f00; /* Couleur de fond rouge vif */
+    color: #fff; /* Couleur du texte blanc */
+    border-radius: 50%; /* Rendre la croix ronde */
+    font-size: 20px; /* Taille de la croix */
+    text-align: center;
+    line-height: 20px; /* Alignement du texte */
+    cursor: pointer;
+    margin-left: 5px;
+}
 
-        #clearBtn:hover {
-            background-color: #aaa;
-        }
+#clearBtn:hover {
+    background-color: #d00; /* Effet de survol plus sombre */
+}
 
-        #loginContainer {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            border-radius: 10px;
-            display: none; /* Caché par défaut */
-        }
+#loginContainer {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 10px;
+    display: none; /* Caché par défaut */
+}
 
-        #loginContainer input {
-            width: calc(100% - 100px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
+#loginContainer input {
+    width: calc(100% - 100px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
 
-        #loginContainer button {
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+#loginContainer button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-        #loginContainer button:hover {
-            background-color: #45a049;
-        }
+#loginContainer button:hover {
+    background-color: #45a049;
+}
 
-        @media (max-width: 600px) {
-            #chatContainer {
-                width: 95%;
-            }
-            #msgTxt {
-                width: calc(100% - 100px);
-            }
-        }
+@media (max-width: 600px) {
+    #chatContainer {
+        width: 95%;
+    }
+    #msgTxt {
+        width: calc(100% - 100px);
+    }
+}
 
-        /* CSS pour le sélecteur d'emojis */
-        #emojiPicker {
-            display: none;
-            position: absolute;
-            bottom: 80px;
-            right: 20px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 10px;
-            max-width: 200px;
-            z-index: 10;
-            overflow: hidden;
-        }
+/* CSS pour le sélecteur d'emojis */
+#emojiPicker {
+    display: none;
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 200px;
+    z-index: 10;
+    overflow: hidden;
+}
 
-        #emojiPicker div {
-            cursor: pointer;
-            font-size: 24px;
-        }
+#emojiPicker div {
+    cursor: pointer;
+    font-size: 24px;
+}
 
-        #emojiPicker div:hover {
-            background-color: #f0f0f0;
-        }
-
+#emojiPicker div:hover {
+    background-color: #f0f0f0;
+}
     </style>
 </head>
 <body>
