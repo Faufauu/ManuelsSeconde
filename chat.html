@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Chat Seconde</title>
     <style>
         body, html {
             margin: 0;
@@ -80,11 +80,26 @@
         }
 
         #msgTxt {
-            width: calc(100% - 150px);
+            width: calc(100% - 120px);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
             outline: none;
+        }
+
+        #emojiBtn {
+            width: 40px;
+            padding: 10px;
+            border: none;
+            background-color: #ffcc00;
+            color: black;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        #emojiBtn:hover {
+            background-color: #ffdd44;
         }
 
         #msgBtn {
@@ -102,33 +117,18 @@
             background-color: #45a049;
         }
 
-        #emojiBtn {
+        #clearBtn {
             width: 40px;
             padding: 10px;
             border: none;
-            background-color: #FFD700;
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        #emojiBtn:hover {
-            background-color: #FFC700;
-        }
-
-        #clearMsgBtn {
-            width: 30px;
-            padding: 10px;
-            border: none;
             background-color: #ccc;
-            color: white;
+            color: black;
             border-radius: 10px;
             cursor: pointer;
-            margin-right: 10px;
+            margin-left: 5px;
         }
 
-        #clearMsgBtn:hover {
+        #clearBtn:hover {
             background-color: #aaa;
         }
 
@@ -169,9 +169,34 @@
                 width: 95%;
             }
             #msgTxt {
-                width: calc(100% - 140px);
+                width: calc(100% - 100px);
             }
         }
+
+        /* CSS pour le sélecteur d'emojis */
+        #emojiPicker {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 200px;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        #emojiPicker div {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        #emojiPicker div:hover {
+            background-color: #f0f0f0;
+        }
+
     </style>
 </head>
 <body>
@@ -182,10 +207,18 @@
         <h1>Chat Local</h1>
         <div id="messages"></div>
 
-        <div style="display: flex;">
-            <button id="clearMsgBtn">&times;</button>
+        <div style="display: flex; position: relative;">
+            <button id="emojiBtn">👍</button>
+            <div id="emojiPicker">
+                <div>👍</div>
+                <div>😱</div>
+                <div>😂</div>
+                <div>😭</div>
+                <div>😎</div>
+                <div>😡</div>
+            </div>
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
-            <button id="emojiBtn">😊</button>
+            <button id="clearBtn">X</button>
             <button id="msgBtn">Envoyer</button>
         </div>
     </div>
@@ -196,9 +229,6 @@
         <input type="password" id="login-password" placeholder="Mot de passe">
         <button id="loginBtn">Se Connecter</button>
     </div>
-
-    <!-- Inclusion du script de l'emoji picker -->
-    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -223,9 +253,13 @@
         const msgTxt = document.getElementById('msgTxt');
         const messagesContainer = document.getElementById('messages');
         const loginContainer = document.getElementById('loginContainer');
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const clearBtn = document.getElementById('clearBtn');
 
         let sender = sessionStorage.getItem('sender');
 
+        // Authentification utilisateur
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginContainer.style.display = 'none';
@@ -246,6 +280,7 @@
             });
         });
 
+        // Envoi du message
         function sendMsg() {
             const msg = msgTxt.value.trim();
             if (msg && sender) {
@@ -253,7 +288,7 @@
                 set(ref(db, `messages/${timestamp}`), {
                     msg: msg,
                     sender: sender,
-                    timestamp: timestamp
+                    timestamp: timestamp // Stocker le timestamp pour chaque message
                 });
                 msgTxt.value = "";
             }
@@ -267,22 +302,7 @@
             }
         });
 
-        // Bouton pour supprimer le message en cours d'écriture
-        document.getElementById('clearMsgBtn').addEventListener('click', () => {
-            msgTxt.value = '';
-        });
-
-        // Configuration de l'Emoji Picker
-        const picker = new EmojiButton();
-        picker.on('emoji', emoji => {
-            msgTxt.value += emoji;
-        });
-
-        document.getElementById('emojiBtn').addEventListener('click', () => {
-            picker.togglePicker(document.getElementById('emojiBtn'));
-        });
-
-        // Fonction pour afficher les messages reçus
+        // Affichage des messages
         function displayMessage(data) {
             const { msg, sender: msgSender } = data.val();
             const msgElement = document.createElement('div');
@@ -292,7 +312,6 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Récupération des messages depuis Firebase en temps réel
         const messagesRef = query(ref(db, 'messages'), orderByKey());
         onChildAdded(messagesRef, (data) => {
             displayMessage(data);
@@ -309,6 +328,24 @@
                 });
             }
         });
+
+        // Gestion du sélecteur d'emojis
+        emojiBtn.addEventListener('click', () => {
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        });
+
+        emojiPicker.addEventListener('click', (event) => {
+            if (event.target.tagName === 'DIV') {
+                msgTxt.value += event.target.textContent;
+                emojiPicker.style.display = 'none';
+            }
+        });
+
+        // Efface le champ de texte
+        clearBtn.addEventListener('click', () => {
+            msgTxt.value = '';
+        });
+
     </script>
 </body>
 </html>
