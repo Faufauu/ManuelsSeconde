@@ -278,11 +278,17 @@ h1 {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             signInWithEmailAndPassword(auth, email, password).catch((error) => {
-                alert('Erreur lors de la connexion : ' + error.message);
+                alert('Erreur lors de la connexion. Veuillez vérifier vos identifiants.');
             });
         });
 
-        // Envoi du message
+        document.getElementById('msgBtn').addEventListener('click', sendMsg);
+        msgTxt.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMsg();
+            }
+        });
+
         function sendMsg() {
             const msg = msgTxt.value.trim();
             if (msg && sender) {
@@ -290,36 +296,30 @@ h1 {
                 set(ref(db, `messages/${timestamp}`), {
                     msg: msg,
                     sender: sender,
-                    timestamp: timestamp // Stocker le timestamp pour chaque message
+                    timestamp: timestamp
                 });
                 msgTxt.value = "";
             }
         }
 
-        document.getElementById('msgBtn').addEventListener('click', sendMsg);
-
-        msgTxt.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                sendMsg();
-            }
-        });
-
-        // Affichage des messages
         function displayMessage(data) {
             const { msg, sender: msgSender } = data.val();
-            const msgElement = document.createElement('div');
-            msgElement.classList.add('message', msgSender === sender ? 'sent' : 'received');
-            msgElement.textContent = `${msgSender}: ${msg}`;
-            messagesContainer.appendChild(msgElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            if (msg !== undefined && msgSender !== undefined) {
+                const msgElement = document.createElement('div');
+                msgElement.classList.add('message', msgSender === sender ? 'sent' : 'received');
+                msgElement.textContent = `${msgSender}: ${msg}`;
+                messagesContainer.appendChild(msgElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
 
-        const messagesRef = query(ref(db, 'messages'), orderByKey());
-        onChildAdded(messagesRef, (data) => {
-            displayMessage(data);
-        });
+        const messagesRef = ref(db, 'messages');
+        const queryMessages = query(messagesRef, orderByKey());
 
-        // Limite les messages à 50, supprime les plus anciens
+        onChildAdded(queryMessages, displayMessage);
+
+        // Limite les messages à 50
         get(messagesRef).then(snapshot => {
             if (snapshot.size > 50) {
                 const messages = snapshot.val();
@@ -331,9 +331,9 @@ h1 {
             }
         });
 
-        // Gestion du sélecteur d'emojis
+        // Affichage et gestion des emojis
         emojiBtn.addEventListener('click', () => {
-            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+            emojiPicker.style.display = emojiPicker.style.display === 'none' || emojiPicker.style.display === '' ? 'block' : 'none';
         });
 
         emojiPicker.addEventListener('click', (event) => {
@@ -343,11 +343,9 @@ h1 {
             }
         });
 
-        // Efface le champ de texte
         clearBtn.addEventListener('click', () => {
             msgTxt.value = '';
         });
-
     </script>
 </body>
 </html>
