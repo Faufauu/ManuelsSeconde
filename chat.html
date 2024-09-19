@@ -80,15 +80,15 @@
         }
 
         #msgTxt {
-            width: calc(100% - 100px);
+            width: calc(100% - 140px);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
             outline: none;
         }
 
-        #msgBtn {
-            width: 80px;
+        #msgBtn, #emojiBtn {
+            width: 60px;
             padding: 10px;
             border: none;
             background-color: #4CAF50;
@@ -98,7 +98,7 @@
             margin-left: 10px;
         }
 
-        #msgBtn:hover {
+        #msgBtn:hover, #emojiBtn:hover {
             background-color: #45a049;
         }
 
@@ -110,7 +110,7 @@
             background-color: rgba(0, 0, 0, 0.6);
             color: white;
             border-radius: 10px;
-            display: none; /* Caché par défaut */
+            display: none;
         }
 
         #loginContainer input {
@@ -134,12 +134,33 @@
             background-color: #45a049;
         }
 
+        #emojiContainer {
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .emoji {
+            font-size: 24px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .emoji:hover {
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
         @media (max-width: 600px) {
             #chatContainer {
                 width: 95%;
             }
             #msgTxt {
-                width: calc(100% - 90px);
+                width: calc(100% - 130px);
             }
         }
     </style>
@@ -154,7 +175,18 @@
 
         <div style="display: flex;">
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
+            <button id="emojiBtn">😀</button> <!-- Nouveau bouton emoji -->
             <button id="msgBtn">Envoyer</button>
+        </div>
+
+        <!-- Conteneur pour la sélection d'emojis -->
+        <div id="emojiContainer">
+            <span class="emoji">😀</span>
+            <span class="emoji">😂</span>
+            <span class="emoji">😍</span>
+            <span class="emoji">😎</span>
+            <span class="emoji">😭</span>
+            <span class="emoji">🤔</span>
         </div>
     </div>
 
@@ -253,14 +285,43 @@
             get(queryRef).then((snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     const messageData = childSnapshot.val();
-                    if (messageData.timestamp < tenHoursAgo) {
-                        remove(ref(db, `messages/${childSnapshot.key}`)); // Supprimer les anciens messages
+                    if (messageData.timestamp && messageData.timestamp < tenHoursAgo) {
+                        remove(childSnapshot.ref);
                     }
                 });
             });
         }
 
         updateMessages();
+
+        // Gestion des Emojis
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiContainer = document.getElementById('emojiContainer');
+
+        // Ouvrir/fermer la boîte d'emojis lorsqu'on clique sur le bouton emoji
+        emojiBtn.addEventListener('click', () => {
+            if (emojiContainer.style.display === 'none') {
+                emojiContainer.style.display = 'block';
+            } else {
+                emojiContainer.style.display = 'none';
+            }
+        });
+
+        // Ajouter l'emoji au champ de texte lorsque l'utilisateur clique sur un emoji
+        document.querySelectorAll('.emoji').forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                msgTxt.value += emoji.textContent; // Ajouter l'emoji au champ de texte
+                emojiContainer.style.display = 'none'; // Fermer le conteneur d'emojis après sélection
+            });
+        });
+
+        // Fermer la boîte d'emojis si l'utilisateur clique ailleurs
+        document.addEventListener('click', (event) => {
+            if (!emojiBtn.contains(event.target) && !emojiContainer.contains(event.target)) {
+                emojiContainer.style.display = 'none';
+            }
+        });
     </script>
+
 </body>
 </html>
