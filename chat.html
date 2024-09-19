@@ -125,7 +125,7 @@
             color: white;
             border-radius: 10px;
             cursor: pointer;
-            margin-left: 10px;
+            margin-right: 10px;
         }
 
         #clearMsgBtn:hover {
@@ -183,10 +183,10 @@
         <div id="messages"></div>
 
         <div style="display: flex;">
-            <input type="text" id="msgTxt" placeholder="Tape ton message...">
-            <button id="msgBtn">Envoyer</button>
-            <button id="emojiBtn">😊</button>
             <button id="clearMsgBtn">&times;</button>
+            <input type="text" id="msgTxt" placeholder="Tape ton message...">
+            <button id="emojiBtn">😊</button>
+            <button id="msgBtn">Envoyer</button>
         </div>
     </div>
 
@@ -196,6 +196,9 @@
         <input type="password" id="login-password" placeholder="Mot de passe">
         <button id="loginBtn">Se Connecter</button>
     </div>
+
+    <!-- Inclusion du script de l'emoji picker -->
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -264,32 +267,48 @@
             }
         });
 
-        // Ajout de l'emoji au message
-        document.getElementById('emojiBtn').addEventListener('click', () => {
-            msgTxt.value += '😊';
-        });
-
         // Bouton pour supprimer le message en cours d'écriture
         document.getElementById('clearMsgBtn').addEventListener('click', () => {
             msgTxt.value = '';
         });
 
-        function updateMessages() {
-            messagesContainer.innerHTML = ''; 
+        // Configuration de l'Emoji Picker
+        const picker = new EmojiButton();
+        picker.on('emoji', emoji => {
+            msgTxt.value += emoji;
+        });
 
-            onChildAdded(ref(db, "messages"), (data) => {
-                const messageData = data.val();
-                if (messageData && messageData.msg && messageData.sender) {
-                    const newMessage = document.createElement('div');
-                    newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
-                    newMessage.textContent = `${messageData.sender}: ${messageData.msg}`;
-                    messagesContainer.appendChild(newMessage);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }
-            });
+        document.getElementById('emojiBtn').addEventListener('click', () => {
+            picker.togglePicker(document.getElementById('emojiBtn'));
+        });
+
+        // Fonction pour afficher les messages reçus
+        function displayMessage(data) {
+            const { msg, sender: msgSender } = data.val();
+            const msgElement = document.createElement('div');
+            msgElement.classList.add('message', msgSender === sender ? 'sent' : 'received');
+            msgElement.textContent = `${msgSender}: ${msg}`;
+            messagesContainer.appendChild(msgElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        updateMessages();
+        // Récupération des messages depuis Firebase en temps réel
+        const messagesRef = query(ref(db, 'messages'), orderByKey());
+        onChildAdded(messagesRef, (data) => {
+            displayMessage(data);
+        });
+
+        // Limite les messages à 50, supprime les plus anciens
+        get(messagesRef).then(snapshot => {
+            if (snapshot.size > 50) {
+                const messages = snapshot.val();
+                const keys = Object.keys(messages).sort((a, b) => a - b);
+                const extraMessages = keys.slice(0, snapshot.size - 50);
+                extraMessages.forEach(key => {
+                    remove(ref(db, `messages/${key}`));
+                });
+            }
+        });
     </script>
 </body>
 </html>
