@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Seconde</title>
+    <title>Chat</title>
     <style>
         body, html {
             margin: 0;
@@ -79,14 +79,8 @@
             text-align: left;
         }
 
-        #msgInputContainer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
         #msgTxt {
-            width: calc(100% - 120px);
+            width: calc(100% - 150px);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -108,14 +102,34 @@
             background-color: #45a049;
         }
 
-        #clearBtn {
-            font-size: 18px;
+        #emojiBtn {
+            width: 40px;
             padding: 10px;
-            cursor: pointer;
-            color: #f00;
-            background: none;
             border: none;
+            background-color: #FFD700;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
             margin-left: 10px;
+        }
+
+        #emojiBtn:hover {
+            background-color: #FFC700;
+        }
+
+        #clearMsgBtn {
+            width: 30px;
+            padding: 10px;
+            border: none;
+            background-color: #ccc;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #clearMsgBtn:hover {
+            background-color: #aaa;
         }
 
         #loginContainer {
@@ -155,7 +169,7 @@
                 width: 95%;
             }
             #msgTxt {
-                width: calc(100% - 100px);
+                width: calc(100% - 140px);
             }
         }
     </style>
@@ -165,13 +179,14 @@
     <div id="chatContainer">
         <a id="closeBtn" href="index.html">&times;</a>
         
-        <h1>Chat</h1>
+        <h1>Chat Local</h1>
         <div id="messages"></div>
 
-        <div id="msgInputContainer">
+        <div style="display: flex;">
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
-            <button id="clearBtn">&times;</button> <!-- Bouton pour effacer le message -->
             <button id="msgBtn">Envoyer</button>
+            <button id="emojiBtn">😊</button>
+            <button id="clearMsgBtn">&times;</button>
         </div>
     </div>
 
@@ -203,7 +218,6 @@
         const auth = getAuth(app);
 
         const msgTxt = document.getElementById('msgTxt');
-        const clearBtn = document.getElementById('clearBtn');
         const messagesContainer = document.getElementById('messages');
         const loginContainer = document.getElementById('loginContainer');
 
@@ -213,9 +227,8 @@
             if (user) {
                 loginContainer.style.display = 'none';
                 if (!sender) {
-                    // Demander un pseudo si ce n'est pas déjà défini
-                    sender = sessionStorage.getItem('sender') || prompt('Quel est ton pseudo ?');
-                    sessionStorage.setItem('sender', sender);  // Enregistrer le pseudo en session
+                    sender = prompt('Quel est ton pseudo ?');
+                    sessionStorage.setItem('sender', sender);
                 }
             } else {
                 loginContainer.style.display = 'block';
@@ -237,7 +250,7 @@
                 set(ref(db, `messages/${timestamp}`), {
                     msg: msg,
                     sender: sender,
-                    timestamp: timestamp // Stocker le timestamp pour chaque message
+                    timestamp: timestamp
                 });
                 msgTxt.value = "";
             }
@@ -251,41 +264,32 @@
             }
         });
 
-        clearBtn.addEventListener('click', () => {
-            msgTxt.value = ''; // Effacer le contenu du champ texte
+        // Ajout de l'emoji au message
+        document.getElementById('emojiBtn').addEventListener('click', () => {
+            msgTxt.value += '😊';
+        });
+
+        // Bouton pour supprimer le message en cours d'écriture
+        document.getElementById('clearMsgBtn').addEventListener('click', () => {
+            msgTxt.value = '';
         });
 
         function updateMessages() {
-            messagesContainer.innerHTML = ''; // Clear messages container
+            messagesContainer.innerHTML = ''; 
 
             onChildAdded(ref(db, "messages"), (data) => {
                 const messageData = data.val();
                 if (messageData && messageData.msg && messageData.sender) {
                     const newMessage = document.createElement('div');
                     newMessage.classList.add('message', messageData.sender === sender ? 'sent' : 'received');
-                    newMessage.textContent = `${messageData.sender} : ${messageData.msg}`;
+                    newMessage.textContent = `${messageData.sender}: ${messageData.msg}`;
                     messagesContainer.appendChild(newMessage);
-
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
-            });
-
-            // Supprimer les messages de plus de 10 heures
-            const tenHoursAgo = Date.now() - 10 * 60 * 60 * 1000;
-            const queryRef = query(ref(db, 'messages'), orderByKey());
-            get(queryRef).then((snapshot
-            get(queryRef).then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const messageData = childSnapshot.val();
-                    if (messageData.timestamp < tenHoursAgo) {
-                        remove(ref(db, `messages/${childSnapshot.key}`));
-                    }
-                });
             });
         }
 
         updateMessages();
     </script>
-
 </body>
 </html>
