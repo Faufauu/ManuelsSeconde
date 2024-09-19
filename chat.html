@@ -79,8 +79,14 @@
             text-align: left;
         }
 
+        #msgInputContainer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         #msgTxt {
-            width: calc(100% - 100px);
+            width: calc(100% - 120px);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -100,6 +106,16 @@
 
         #msgBtn:hover {
             background-color: #45a049;
+        }
+
+        #clearBtn {
+            font-size: 18px;
+            padding: 10px;
+            cursor: pointer;
+            color: #f00;
+            background: none;
+            border: none;
+            margin-left: 10px;
         }
 
         #loginContainer {
@@ -139,7 +155,7 @@
                 width: 95%;
             }
             #msgTxt {
-                width: calc(100% - 90px);
+                width: calc(100% - 100px);
             }
         }
     </style>
@@ -152,8 +168,9 @@
         <h1>Chat</h1>
         <div id="messages"></div>
 
-        <div style="display: flex;">
+        <div id="msgInputContainer">
             <input type="text" id="msgTxt" placeholder="Tape ton message...">
+            <button id="clearBtn">&times;</button> <!-- Bouton pour effacer le message -->
             <button id="msgBtn">Envoyer</button>
         </div>
     </div>
@@ -186,6 +203,7 @@
         const auth = getAuth(app);
 
         const msgTxt = document.getElementById('msgTxt');
+        const clearBtn = document.getElementById('clearBtn');
         const messagesContainer = document.getElementById('messages');
         const loginContainer = document.getElementById('loginContainer');
 
@@ -233,6 +251,10 @@
             }
         });
 
+        clearBtn.addEventListener('click', () => {
+            msgTxt.value = ''; // Effacer le contenu du champ texte
+        });
+
         function updateMessages() {
             messagesContainer.innerHTML = ''; // Clear messages container
 
@@ -251,11 +273,12 @@
             // Supprimer les messages de plus de 10 heures
             const tenHoursAgo = Date.now() - 10 * 60 * 60 * 1000;
             const queryRef = query(ref(db, 'messages'), orderByKey());
+            get(queryRef).then((snapshot
             get(queryRef).then((snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     const messageData = childSnapshot.val();
                     if (messageData.timestamp < tenHoursAgo) {
-                        remove(ref(db, `messages/${childSnapshot.key}`)); // Supprimer les anciens messages
+                        remove(ref(db, `messages/${childSnapshot.key}`));
                     }
                 });
             });
@@ -263,5 +286,6 @@
 
         updateMessages();
     </script>
+
 </body>
 </html>
