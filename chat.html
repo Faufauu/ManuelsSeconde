@@ -289,18 +289,20 @@ h1 {
             }
         });
 
-        function sendMsg() {
-            const msg = msgTxt.value.trim();
-            if (msg && sender) {
-                const timestamp = new Date().getTime();
-                set(ref(db, `messages/${timestamp}`), {
-                    msg: msg,
-                    sender: sender,
-                    timestamp: timestamp
-                });
-                msgTxt.value = "";
-            }
-        }
+        import { serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+function sendMsg() {
+    const msg = msgTxt.value.trim();
+    if (msg && sender) {
+        const timestamp = new Date().getTime(); // Timestamp côté client (inutile ici)
+        set(ref(db, `messages/${timestamp}`), {
+            msg: msg,
+            sender: sender,
+            timestamp: serverTimestamp() // Timestamp côté serveur pour plus de précision
+        });
+        msgTxt.value = "";
+    }
+}
 
         function displayMessage(data) {
             const { msg, sender: msgSender } = data.val();
@@ -317,19 +319,19 @@ h1 {
         const messagesRef = ref(db, 'messages');
         const queryMessages = query(messagesRef, orderByKey());
 
-        onChildAdded(queryMessages, displayMessage);
+       onChildAdded(queryMessages, (data) => {
+    const messageData = data.val();
+    const messageTime = messageData.timestamp;
+    const currentTime = new Date().getTime();
+    
+    // Vérifiez si le message est plus vieux que 10 heures (36 000 000 ms)
+    if (currentTime - messageTime > 36000000) {
+        remove(ref(db, `messages/${data.key}`)); // Supprime les anciens messages
+    } else {
+        displayMessage(data); // Affiche les messages s'ils sont récents
+    }
+});
 
-        // Limite les messages à 50
-        get(messagesRef).then(snapshot => {
-            if (snapshot.size > 50) {
-                const messages = snapshot.val();
-                const keys = Object.keys(messages).sort((a, b) => a - b);
-                const extraMessages = keys.slice(0, snapshot.size - 50);
-                extraMessages.forEach(key => {
-                    remove(ref(db, `messages/${key}`));
-                });
-            }
-        });
 
         // Affichage et gestion des emojis
         emojiBtn.addEventListener('click', () => {
